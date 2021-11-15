@@ -1,0 +1,5 @@
+rootProject.name = '230936_C&CA_Coursework'
+include 'task1'
+include 'task2'
+include 'task3'
+
