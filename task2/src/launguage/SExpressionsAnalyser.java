@@ -4,8 +4,7 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.*;
 
-public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types>
-{
+public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     private Map<String, SExpressionsParser.DecContext> global_funcs = new HashMap<>();
     private Map<String, Types> local_vars = new HashMap<>();
@@ -13,8 +12,7 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types>
     private SExpressionsParser.DecContext current_dec = null;
     private final SExpressionsToString toStrConverter = new SExpressionsToString();
 
-    public String visitAndPrint(SExpressionsParser.ProgContext prog)
-    {
+    public String visitAndPrint(SExpressionsParser.ProgContext prog) {
         visit(prog);    // Discards the dummy return value.
         // At this point, we know for sure that there is at least a 'main' function.
         int index_main = 0;
@@ -30,8 +28,8 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types>
         return toStrConverter.visitHighlight(prog, prog).replaceAll("\u001B\\[[;\\d]*m", "");   // Removes ANSI colours.
     }
 
-    @Override public Types visitProg(SExpressionsParser.ProgContext ctx)
-    {
+    @Override
+    public Types visitProg(SExpressionsParser.ProgContext ctx) {
 
         // TODO: modify and complete this method.
 
@@ -43,53 +41,63 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types>
             SExpressionsParser.IdentifierContext id = dec.identifier();
             SExpressionsParser.TypeContext type = dec.type();
 
+            if (!global_funcs.containsKey(id.Idfr().getText())) {
+                global_funcs.put(id.Idfr().getText(), dec);
+            } else {
+                throw new TypeException().duplicatedFuncError(ctx, id, Types.toType(type));
+            }
+
             if (id.Idfr().getText().equals("main")) {
+                if(Types.toType(type) != Types.INT){
+                    throw new TypeException().mainFuncError(ctx, dec, Types.toType(type));
+                } else if (dec.params.size() != 0){
+                    throw new TypeException().mainFuncError(dec, dec.typed_idfr(0), Types.toType(dec.typed_idfr(0).type()));
+                }
                 found_main = true;
             }
         }
 
-
         if (!found_main) {
             throw new TypeException().noMainFuncError();
         }
-
+        // HEEERRREE NOW
         return Types.UNKNOWN;   // This is just a dummy return value.
 
     }
 
-    @Override public Types visitDec(SExpressionsParser.DecContext ctx)
-    {
+    @Override
+    public Types visitDec(SExpressionsParser.DecContext ctx) {
         // TODO: modify and complete this method.
-        
+
         return Types.UNKNOWN;
     }
 
-    @Override public Types visitTyped_idfr(SExpressionsParser.Typed_idfrContext ctx)
-    {
+    @Override
+    public Types visitTyped_idfr(SExpressionsParser.Typed_idfrContext ctx) {
         throw new RuntimeException("Should not be here!");
     }
 
-    @Override public Types visitType(SExpressionsParser.TypeContext ctx)
-    {
+    @Override
+    public Types visitType(SExpressionsParser.TypeContext ctx) {
         throw new RuntimeException("Should not be here!");
     }
 
-    @Override public Types visitBlock(SExpressionsParser.BlockContext ctx)
-    {
+    @Override
+    public Types visitBlock(SExpressionsParser.BlockContext ctx) {
         // TODO: modify and complete this method.
 
         return Types.UNKNOWN;
     }
 
-    @Override public Types visitIfExpr(SExpressionsParser.IfExprContext ctx)
-    {
+    @Override
+    public Types visitIfExpr(SExpressionsParser.IfExprContext ctx) {
         // TODO: modify and complete this method.
 
         return Types.UNKNOWN;
     }
 
-    @Override public Types visitBinExpr(SExpressionsParser.BinExprContext ctx)
-    {
+    @Override
+    public Types visitBinExpr(SExpressionsParser.BinExprContext ctx) {
 
         // TODO: modify and complete this method.
 
@@ -112,70 +120,70 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types>
         return t;
     }
 
-    @Override public Types visitWhileExpr(SExpressionsParser.WhileExprContext ctx)
-    {
+    @Override
+    public Types visitWhileExpr(SExpressionsParser.WhileExprContext ctx) {
         // TODO: modify and complete this method.
 
         return Types.UNKNOWN;
     }
 
-    @Override public Types visitRepeatExpr(SExpressionsParser.RepeatExprContext ctx)
-    {
+    @Override
+    public Types visitRepeatExpr(SExpressionsParser.RepeatExprContext ctx) {
         // TODO: modify and complete this method.
 
         return Types.UNKNOWN;
     }
 
-    @Override public Types visitAsgmtExpr(SExpressionsParser.AsgmtExprContext ctx)
-    {
+    @Override
+    public Types visitAsgmtExpr(SExpressionsParser.AsgmtExprContext ctx) {
         // TODO: modify and complete this method.
 
         return Types.UNKNOWN;
     }
 
-    @Override public Types visitFunInvocExpr(SExpressionsParser.FunInvocExprContext ctx)
-    {
+    @Override
+    public Types visitFunInvocExpr(SExpressionsParser.FunInvocExprContext ctx) {
         // TODO: modify and complete this method.
 
         return Types.UNKNOWN;
     }
 
-    @Override public Types visitBlockExpr(SExpressionsParser.BlockExprContext ctx)
-    {
+    @Override
+    public Types visitBlockExpr(SExpressionsParser.BlockExprContext ctx) {
         // TODO: modify and complete this method.
 
         return Types.UNKNOWN;
     }
 
-    @Override public Types visitIdExpr(SExpressionsParser.IdExprContext ctx)
-    {
+    @Override
+    public Types visitIdExpr(SExpressionsParser.IdExprContext ctx) {
         // TODO: modify and complete this method.
 
         return Types.UNKNOWN;
     }
 
-    @Override public Types visitIntExpr(SExpressionsParser.IntExprContext ctx)
-    {
+    @Override
+    public Types visitIntExpr(SExpressionsParser.IntExprContext ctx) {
         return Types.INT;
     }
 
-    @Override public Types visitSkipExpr(SExpressionsParser.SkipExprContext ctx)
-    {
+    @Override
+    public Types visitSkipExpr(SExpressionsParser.SkipExprContext ctx) {
         return Types.UNIT;
     }
 
-    @Override public Types visitIdentifier(SExpressionsParser.IdentifierContext ctx)
-    {
+    @Override
+    public Types visitIdentifier(SExpressionsParser.IdentifierContext ctx) {
         throw new RuntimeException("Should not be here!");
     }
 
-    @Override public Types visitInteger(SExpressionsParser.IntegerContext ctx)
-    {
+    @Override
+    public Types visitInteger(SExpressionsParser.IntegerContext ctx) {
         throw new RuntimeException("Should not be here!");
     }
 
-    @Override public Types visitBinop(SExpressionsParser.BinopContext ctx)
-    {
+    @Override
+    public Types visitBinop(SExpressionsParser.BinopContext ctx) {
         throw new RuntimeException("Should not be here!");
     }
 
