@@ -45,9 +45,9 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
             }
 
             if (id.Idfr().getText().equals("main")) {
-                if(Types.toType(type) != Types.INT){
+                if (Types.toType(type) != Types.INT) {
                     throw new TypeException().mainFuncError(ctx, dec, Types.toType(type));
-                } else if (dec.params.size() != 0){
+                } else if (dec.params.size() != 0) {
                     throw new TypeException().mainFuncError(dec, dec.typed_idfr(0), Types.toType(dec.typed_idfr(0).type()));
                 }
                 found_main = true;
@@ -69,8 +69,8 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
             SExpressionsParser.IdentifierContext id = ctx.identifier();
             String name = currentParam.getText();
             Types type = Types.toType(currentParam.type());
-            if (!local_vars.containsKey(name)){
-                if(type == Types.UNIT){
+            if (!local_vars.containsKey(name)) {
+                if (type == Types.UNIT) {
                     throw new TypeException().unitVarError(ctx, currentParam.identifier(), type);
                 } else {
                     local_vars.put(name, type);
@@ -79,6 +79,8 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
                 throw new TypeException().duplicatedVarError(ctx, currentParam.identifier(), type);
             }
         }
+        current_dec = ctx;
+        visitBlock(ctx.block());
         return Types.UNKNOWN;
     }
 
@@ -94,8 +96,9 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     @Override
     public Types visitBlock(SExpressionsParser.BlockContext ctx) {
-        // TODO: modify and complete this method.
-
+        for (int i = 0; i < ctx.exprs.size(); i++) {
+            visit(ctx.expr(i));
+        }
         return Types.UNKNOWN;
     }
 
@@ -153,8 +156,10 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     @Override
     public Types visitFunInvocExpr(SExpressionsParser.FunInvocExprContext ctx) {
-        // TODO: modify and complete this method.
-
+        if (!global_funcs.containsKey(ctx.identifier().Idfr().getText())) {
+            throw new TypeException().undeclaredFuncError(current_dec, ctx.identifier(), Types.UNKNOWN);
+        }
+        visitBlock(ctx.block());
         return Types.UNKNOWN;
     }
 
@@ -167,8 +172,9 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     @Override
     public Types visitIdExpr(SExpressionsParser.IdExprContext ctx) {
-        // TODO: modify and complete this method.
-
+        if(!local_vars.containsKey(ctx.identifier().getText())){
+            throw new TypeException().undeclaredVarError(current_dec, ctx.identifier(), ctx.t);
+        }
         return Types.UNKNOWN;
     }
 
