@@ -30,9 +30,6 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     @Override
     public Types visitProg(SExpressionsParser.ProgContext ctx) {
-
-        // TODO: modify and complete this method.
-
         Boolean found_main = false;
 
         for (int i = 0; i < ctx.decs.size(); ++i) {
@@ -55,20 +52,33 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
                 }
                 found_main = true;
             }
+
+            visitDec(dec);
         }
 
         if (!found_main) {
             throw new TypeException().noMainFuncError();
         }
-        // HEEERRREE NOW
         return Types.UNKNOWN;   // This is just a dummy return value.
-
     }
 
     @Override
     public Types visitDec(SExpressionsParser.DecContext ctx) {
-        // TODO: modify and complete this method.
-
+        for (int i = 0; i < ctx.params.size(); i++) {
+            SExpressionsParser.Typed_idfrContext currentParam = ctx.params.get(i);
+            SExpressionsParser.IdentifierContext id = ctx.identifier();
+            String name = currentParam.getText();
+            Types type = Types.toType(currentParam.type());
+            if (!local_vars.containsKey(name)){
+                if(type == Types.UNIT){
+                    throw new TypeException().unitVarError(ctx, currentParam.identifier(), type);
+                } else {
+                    local_vars.put(name, type);
+                }
+            } else {
+                throw new TypeException().duplicatedVarError(ctx, currentParam.identifier(), type);
+            }
+        }
         return Types.UNKNOWN;
     }
 
