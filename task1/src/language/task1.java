@@ -6,7 +6,6 @@ import org.antlr.v4.runtime.tree.*;
 
 public class task1 {
     public static void main(String[] args) throws Exception {
-        System.out.println("change");
         // create a CharStream that reads from standard input
         CharStream input = CharStreams.fromStream(System.in);
 
@@ -19,7 +18,7 @@ public class task1 {
         // create a parser that feeds off the tokens buffer
         LanguageParser parser = new LanguageParser(tokens);
 
-        ParseTree tree = parser.prog(); // begin parsing at prgm rule
+        ParseTree tree = parser.prog(); // begin parsing at prog rule
 
         Worker worker = new Worker();
         worker.visit(tree);

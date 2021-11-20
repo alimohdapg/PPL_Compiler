@@ -65,7 +65,7 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitBlock(LanguageParser.BlockContext ctx) {
-        ArrayList<Object> blockList = new ArrayList<>();
+        ArrayList<Object> blockList =  new ArrayList<>();
         blockList.add(visit(ctx.ene()));
         return blockList;
     }
@@ -77,10 +77,7 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitAnotherExp(LanguageParser.AnotherExpContext ctx) {
-        ArrayList<Object> anotherExpList = new ArrayList<>();
-        anotherExpList.add(visit(ctx.exp()));
-        anotherExpList.add(visit(ctx.ene()));
-        return anotherExpList;
+        return visit(ctx.exp()) + ", " + visit(ctx.ene());
     }
 
     @Override
@@ -162,7 +159,7 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitSkip(LanguageParser.SkipContext ctx) {
-        return null;
+        return "Skip";
     }
 
     @Override
