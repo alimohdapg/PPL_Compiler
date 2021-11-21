@@ -111,26 +111,40 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     @Override
     public Types visitBinExpr(SExpressionsParser.BinExprContext ctx) {
-
+        System.out.println("im here lol");
         // TODO: modify and complete this method.
 
         SExpressionsParser.ExprContext operand1 = ctx.expr(0);
         operand1.t = visit(operand1);
+        SExpressionsParser.ExprContext operand2 = ctx.expr(1);
+        operand2.t = visit(operand2);
 
-        Types t = switch (((TerminalNode) (ctx.binop().getChild(0))).getSymbol().getType()) {
-
-            case SExpressionsParser.Eq -> {
-
-                yield Types.UNKNOWN;
-
+        return switch (((TerminalNode) (ctx.binop().getChild(0))).getSymbol().getType()) {
+            case SExpressionsParser.Eq, SExpressionsParser.LessEq, SExpressionsParser.GtrEq, SExpressionsParser.Gtr, SExpressionsParser.Less -> {
+                if(operand1.t == Types.INT && operand2.t == Types.INT){
+                    yield Types.BOOL;
+                } else {
+                    throw new TypeException().comparisonError(ctx, operand1, operand1.t, operand2, operand2.t);
+                }
+            }
+            case SExpressionsParser.Plus, SExpressionsParser.Minus, SExpressionsParser.Times, SExpressionsParser.Div -> {
+                if(operand1.t == Types.INT && operand2.t == Types.INT){
+                    yield Types.INT;
+                } else {
+                    throw new TypeException().arithmeticError(ctx, operand1, operand1.t, operand2, operand2.t);
+                }
+            }
+            case SExpressionsParser.And, SExpressionsParser.Or, SExpressionsParser.Xor -> {
+                if(operand1.t == Types.BOOL && operand2.t == Types.BOOL){
+                    yield Types.BOOL;
+                } else {
+                    throw new TypeException().logicalError(ctx, operand1, operand1.t, operand2, operand2.t);
+                }
             }
             default -> {
                 throw new RuntimeException("Shouldn't be here - wrong binary operator.");
             }
-
         };
-
-        return t;
     }
 
     @Override

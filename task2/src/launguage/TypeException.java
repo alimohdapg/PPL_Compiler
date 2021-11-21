@@ -157,7 +157,6 @@ public class TypeException extends RuntimeException
     // In this case, context is the binop statement, e1, e2 are two expressions involved, t1, t2 are e1.t and e2.t.
     public TypeException logicalError(ParseTree binop, ParseTree e1, Types t1, ParseTree e2, Types t2)
     {
-
         msg = "Invalid operands in Boolean expression";
         binaryExpressionContextReport(binop, e1, t1, e2, t2);
         return this;
