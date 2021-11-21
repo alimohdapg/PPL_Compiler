@@ -8,7 +8,6 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     private final Map<String, SExpressionsParser.DecContext> global_funcs = new HashMap<>();
     private final Map<String, Types> local_vars = new HashMap<>();
-
     private SExpressionsParser.DecContext current_dec = null;
     private final SExpressionsToString toStrConverter = new SExpressionsToString();
 
@@ -31,19 +30,15 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
     @Override
     public Types visitProg(SExpressionsParser.ProgContext ctx) {
         boolean found_main = false;
-
         for (int i = 0; i < ctx.decs.size(); ++i) {
-
             SExpressionsParser.DecContext dec = ctx.decs.get(i);
             SExpressionsParser.IdentifierContext id = dec.identifier();
             SExpressionsParser.TypeContext type = dec.type();
-
             if (!global_funcs.containsKey(id.Idfr().getText())) {
                 global_funcs.put(id.Idfr().getText(), dec);
             } else {
                 throw new TypeException().duplicatedFuncError(ctx, id, Types.toType(type));
             }
-
             if (id.Idfr().getText().equals("main")) {
                 if (Types.toType(type) != Types.INT) {
                     throw new TypeException().mainFuncError(ctx, dec, Types.toType(type));
@@ -52,10 +47,8 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
                 }
                 found_main = true;
             }
-
             visitDec(dec);
         }
-
         if (!found_main) {
             throw new TypeException().noMainFuncError();
         }
@@ -130,13 +123,10 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     @Override
     public Types visitBinExpr(SExpressionsParser.BinExprContext ctx) {
-        // TODO: modify and complete this method.
-
         SExpressionsParser.ExprContext operand1 = ctx.expr(0);
         operand1.t = visit(operand1);
         SExpressionsParser.ExprContext operand2 = ctx.expr(1);
         operand2.t = visit(operand2);
-
         return switch (((TerminalNode) (ctx.binop().getChild(0))).getSymbol().getType()) {
             case SExpressionsParser.Eq, SExpressionsParser.LessEq, SExpressionsParser.GtrEq, SExpressionsParser.Gtr, SExpressionsParser.Less -> {
                 if (operand1.t == Types.INT && operand2.t == Types.INT) {
@@ -199,7 +189,7 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
     public Types visitAsgmtExpr(SExpressionsParser.AsgmtExprContext ctx) {
         SExpressionsParser.ExprContext asgmtExprExpr = ctx.expr();
         asgmtExprExpr.t = visit(asgmtExprExpr);
-        if(local_vars.get(ctx.identifier().getText()) != asgmtExprExpr.t){
+        if (local_vars.get(ctx.identifier().getText()) != asgmtExprExpr.t) {
             throw new TypeException().assignmentError(ctx, ctx.identifier(), local_vars.get(ctx.identifier().getText()), asgmtExprExpr, asgmtExprExpr.t);
         }
         return Types.UNIT;
@@ -213,12 +203,12 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
             throw new TypeException().undeclaredFuncError(current_dec, id, Types.UNKNOWN);
         }
         List<SExpressionsParser.Typed_idfrContext> funcParamList = global_funcs.get(id.Idfr().getText()).params;
-        if(block.expr().size() != funcParamList.size()){
+        if (block.expr().size() != funcParamList.size()) {
             throw new TypeException().argumentNumberError(ctx, block, Types.UNKNOWN);
         }
         for (int i = 0; i < global_funcs.get(id.Idfr().getText()).params.size(); i++) {
             block.expr(i).t = visit(block.expr(i));
-            if(block.expr(i).t != Types.toType(funcParamList.get(i).type())){
+            if (block.expr(i).t != Types.toType(funcParamList.get(i).type())) {
                 throw new TypeException().argumentError(ctx, block.expr(i), block.expr(i).t);
             }
         }
@@ -264,5 +254,4 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
     public Types visitBinop(SExpressionsParser.BinopContext ctx) {
         throw new RuntimeException("Should not be here!");
     }
-
 }
