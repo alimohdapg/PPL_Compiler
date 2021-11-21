@@ -175,12 +175,12 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
         conditionExpr.t = visit(conditionExpr);
         SExpressionsParser.BlockContext repeatBlock = ctx.block();
         repeatBlock.t = visit(repeatBlock);
-        if (conditionExpr.t != Types.BOOL) {
-            throw new TypeException().conditionError(ctx, conditionExpr, conditionExpr.t);
-        }
         if (repeatBlock.t != Types.UNIT) {
             SExpressionsParser.ExprContext lastRepeatBlockExpr = repeatBlock.expr(repeatBlock.exprs.size() - 1);
             throw new TypeException().loopBodyError(ctx, lastRepeatBlockExpr, repeatBlock.t);
+        }
+        if (conditionExpr.t != Types.BOOL) {
+            throw new TypeException().conditionError(ctx, conditionExpr, conditionExpr.t);
         }
         return Types.UNIT;
     }
