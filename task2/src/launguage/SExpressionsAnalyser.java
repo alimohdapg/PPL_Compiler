@@ -191,9 +191,12 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     @Override
     public Types visitAsgmtExpr(SExpressionsParser.AsgmtExprContext ctx) {
-        // TODO: modify and complete this method.
-
-        return Types.UNKNOWN;
+        SExpressionsParser.ExprContext asgmtExprExpr = ctx.expr();
+        asgmtExprExpr.t = visit(asgmtExprExpr);
+        if(local_vars.get(ctx.identifier().getText()) != asgmtExprExpr.t){
+            throw new TypeException().assignmentError(ctx, ctx.identifier(), local_vars.get(ctx.identifier().getText()), asgmtExprExpr, asgmtExprExpr.t);
+        }
+        return Types.UNIT;
     }
 
     @Override
