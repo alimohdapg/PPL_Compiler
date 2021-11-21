@@ -67,7 +67,7 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
         for (int i = 0; i < ctx.params.size(); i++) {
             SExpressionsParser.Typed_idfrContext currentParam = ctx.params.get(i);
             SExpressionsParser.IdentifierContext id = ctx.identifier();
-            String name = currentParam.getText();
+            String name = currentParam.identifier().getText();
             Types type = Types.toType(currentParam.type());
             if (!local_vars.containsKey(name)) {
                 if (type == Types.UNIT) {
@@ -98,20 +98,34 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
     public Types visitBlock(SExpressionsParser.BlockContext ctx) {
         for (int i = 0; i < ctx.exprs.size(); i++) {
             visit(ctx.expr(i));
+            if(i == ctx.exprs.size() - 1){
+                return visit(ctx.expr(i));
+            }
         }
         return Types.UNKNOWN;
     }
 
     @Override
     public Types visitIfExpr(SExpressionsParser.IfExprContext ctx) {
-        // TODO: modify and complete this method.
-
+        SExpressionsParser.ExprContext conditionExpr = ctx.expr();
+        conditionExpr.t = visit(conditionExpr);
+        SExpressionsParser.BlockContext thenBlock = ctx.block(0);
+        thenBlock.t = visit(thenBlock);
+        SExpressionsParser.BlockContext elseBlock = ctx.block(1);
+        elseBlock.t = visit(elseBlock);
+        if (conditionExpr.t != Types.BOOL) {
+            throw new TypeException().conditionError(ctx, conditionExpr, conditionExpr.t);
+        }
+        if (thenBlock.t != elseBlock.t) {
+            SExpressionsParser.ExprContext lastThenBlockExpr = thenBlock.expr(thenBlock.exprs.size() - 1);
+            SExpressionsParser.ExprContext lastElseBlockExpr = elseBlock.expr(elseBlock.exprs.size() - 1);
+            throw new TypeException().branchMismatchError(ctx, lastThenBlockExpr, thenBlock.t, elseBlock, elseBlock.t);
+        }
         return Types.UNKNOWN;
     }
 
     @Override
     public Types visitBinExpr(SExpressionsParser.BinExprContext ctx) {
-        System.out.println("im here lol");
         // TODO: modify and complete this method.
 
         SExpressionsParser.ExprContext operand1 = ctx.expr(0);
@@ -121,21 +135,21 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
         return switch (((TerminalNode) (ctx.binop().getChild(0))).getSymbol().getType()) {
             case SExpressionsParser.Eq, SExpressionsParser.LessEq, SExpressionsParser.GtrEq, SExpressionsParser.Gtr, SExpressionsParser.Less -> {
-                if(operand1.t == Types.INT && operand2.t == Types.INT){
+                if (operand1.t == Types.INT && operand2.t == Types.INT) {
                     yield Types.BOOL;
                 } else {
                     throw new TypeException().comparisonError(ctx, operand1, operand1.t, operand2, operand2.t);
                 }
             }
             case SExpressionsParser.Plus, SExpressionsParser.Minus, SExpressionsParser.Times, SExpressionsParser.Div -> {
-                if(operand1.t == Types.INT && operand2.t == Types.INT){
+                if (operand1.t == Types.INT && operand2.t == Types.INT) {
                     yield Types.INT;
                 } else {
                     throw new TypeException().arithmeticError(ctx, operand1, operand1.t, operand2, operand2.t);
                 }
             }
             case SExpressionsParser.And, SExpressionsParser.Or, SExpressionsParser.Xor -> {
-                if(operand1.t == Types.BOOL && operand2.t == Types.BOOL){
+                if (operand1.t == Types.BOOL && operand2.t == Types.BOOL) {
                     yield Types.BOOL;
                 } else {
                     throw new TypeException().logicalError(ctx, operand1, operand1.t, operand2, operand2.t);
@@ -186,10 +200,11 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     @Override
     public Types visitIdExpr(SExpressionsParser.IdExprContext ctx) {
-        if(!local_vars.containsKey(ctx.identifier().getText())){
+        String name = ctx.identifier().getText();
+        if (!local_vars.containsKey(name)) {
             throw new TypeException().undeclaredVarError(current_dec, ctx.identifier(), ctx.t);
         }
-        return Types.UNKNOWN;
+        return local_vars.get(name);
     }
 
     @Override
