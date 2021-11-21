@@ -1,4 +1,4 @@
-package launguage;// Generated from C:/Users/user/IdeaProjects/Task2/src\SExpressions.g4 by ANTLR 4.9.1
+package language;// Generated from C:/Users/user/IdeaProjects/Task2/src\SExpressions.g4 by ANTLR 4.9.1
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
 /**

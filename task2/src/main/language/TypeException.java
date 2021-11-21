@@ -1,4 +1,4 @@
-package launguage;/*
+package language;/*
     An implementation of an error reporting class, usable as an exception.
     This depends on the definition of a class 'ParseTree' to represent S-expressions,
     and 'Types' to represent types of S-expressions.

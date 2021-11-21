@@ -1,4 +1,4 @@
-package launguage;/*
+package language;/*
     A basic pretty-printer for expressions involving commas and balanced square brackets.
 
     Usage:
@@ -20,10 +20,6 @@ package launguage;/*
     Please do not change it, but contact me to suggest improvements / point out errors.
     --- JRNB (2021-10-28, ca 12.30 BST)
 */
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 
 class G5035_S_Expression_PrettyPrinter {
     // A depth parameter
