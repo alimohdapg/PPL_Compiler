@@ -6,8 +6,8 @@ import java.util.*;
 
 public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
-    private Map<String, SExpressionsParser.DecContext> global_funcs = new HashMap<>();
-    private Map<String, Types> local_vars = new HashMap<>();
+    private final Map<String, SExpressionsParser.DecContext> global_funcs = new HashMap<>();
+    private final Map<String, Types> local_vars = new HashMap<>();
 
     private SExpressionsParser.DecContext current_dec = null;
     private final SExpressionsToString toStrConverter = new SExpressionsToString();
@@ -30,7 +30,7 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     @Override
     public Types visitProg(SExpressionsParser.ProgContext ctx) {
-        Boolean found_main = false;
+        boolean found_main = false;
 
         for (int i = 0; i < ctx.decs.size(); ++i) {
 
@@ -66,7 +66,6 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
     public Types visitDec(SExpressionsParser.DecContext ctx) {
         for (int i = 0; i < ctx.params.size(); i++) {
             SExpressionsParser.Typed_idfrContext currentParam = ctx.params.get(i);
-            SExpressionsParser.IdentifierContext id = ctx.identifier();
             String name = currentParam.identifier().getText();
             Types type = Types.toType(currentParam.type());
             if (!local_vars.containsKey(name)) {
@@ -102,10 +101,10 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
     @Override
     public Types visitBlock(SExpressionsParser.BlockContext ctx) {
         for (int i = 0; i < ctx.exprs.size(); i++) {
-            visit(ctx.expr(i));
             if (i == ctx.exprs.size() - 1) {
                 return visit(ctx.expr(i));
             }
+            visit(ctx.expr(i));
         }
         return Types.UNKNOWN;
     }
@@ -124,7 +123,7 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
         if (thenBlock.t != elseBlock.t) {
             SExpressionsParser.ExprContext lastThenBlockExpr = thenBlock.expr(thenBlock.exprs.size() - 1);
             SExpressionsParser.ExprContext lastElseBlockExpr = elseBlock.expr(elseBlock.exprs.size() - 1);
-            throw new TypeException().branchMismatchError(ctx, lastThenBlockExpr, thenBlock.t, elseBlock, elseBlock.t);
+            throw new TypeException().branchMismatchError(ctx, lastThenBlockExpr, thenBlock.t, lastElseBlockExpr, elseBlock.t);
         }
         return thenBlock.t;
     }
@@ -160,9 +159,7 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
                     throw new TypeException().logicalError(ctx, operand1, operand1.t, operand2, operand2.t);
                 }
             }
-            default -> {
-                throw new RuntimeException("Shouldn't be here - wrong binary operator.");
-            }
+            default -> throw new RuntimeException("Shouldn't be here - wrong binary operator.");
         };
     }
 
@@ -201,11 +198,23 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     @Override
     public Types visitFunInvocExpr(SExpressionsParser.FunInvocExprContext ctx) {
-        if (!global_funcs.containsKey(ctx.identifier().Idfr().getText())) {
-            throw new TypeException().undeclaredFuncError(current_dec, ctx.identifier(), Types.UNKNOWN);
+        SExpressionsParser.IdentifierContext id = ctx.identifier();
+        SExpressionsParser.BlockContext block = ctx.block();
+        if (!global_funcs.containsKey(id.Idfr().getText())) {
+            throw new TypeException().undeclaredFuncError(current_dec, id, Types.UNKNOWN);
+        }
+        List<SExpressionsParser.Typed_idfrContext> funcParamList = global_funcs.get(id.Idfr().getText()).params;
+        if(block.expr().size() != funcParamList.size()){
+            throw new TypeException().argumentNumberError(ctx, block, Types.UNKNOWN);
+        }
+        for (int i = 0; i < global_funcs.get(id.Idfr().getText()).params.size(); i++) {
+            block.expr(i).t = visit(block.expr(i));
+            if(block.expr(i).t != Types.toType(funcParamList.get(i).type())){
+                throw new TypeException().argumentError(ctx, block.expr(i), block.expr(i).t);
+            }
         }
         visitBlock(ctx.block());
-        return Types.UNKNOWN;
+        return Types.toType(global_funcs.get(id.Idfr().getText()).type());
     }
 
     @Override
