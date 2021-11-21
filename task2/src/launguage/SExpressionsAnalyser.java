@@ -176,14 +176,23 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
             SExpressionsParser.ExprContext lastWhileBlockExpr = whileBlock.expr(whileBlock.exprs.size() - 1);
             throw new TypeException().loopBodyError(ctx, lastWhileBlockExpr, whileBlock.t);
         }
-        return Types.UNKNOWN;
+        return Types.UNIT;
     }
 
     @Override
     public Types visitRepeatExpr(SExpressionsParser.RepeatExprContext ctx) {
-        // TODO: modify and complete this method.
-
-        return Types.UNKNOWN;
+        SExpressionsParser.ExprContext conditionExpr = ctx.expr();
+        conditionExpr.t = visit(conditionExpr);
+        SExpressionsParser.BlockContext repeatBlock = ctx.block();
+        repeatBlock.t = visit(repeatBlock);
+        if (conditionExpr.t != Types.BOOL) {
+            throw new TypeException().conditionError(ctx, conditionExpr, conditionExpr.t);
+        }
+        if (repeatBlock.t != Types.UNIT) {
+            SExpressionsParser.ExprContext lastRepeatBlockExpr = repeatBlock.expr(repeatBlock.exprs.size() - 1);
+            throw new TypeException().loopBodyError(ctx, lastRepeatBlockExpr, repeatBlock.t);
+        }
+        return Types.UNIT;
     }
 
     @Override
@@ -219,9 +228,7 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     @Override
     public Types visitBlockExpr(SExpressionsParser.BlockExprContext ctx) {
-        // TODO: modify and complete this method.
-
-        return Types.UNKNOWN;
+        return visitBlock(ctx.block());
     }
 
     @Override
