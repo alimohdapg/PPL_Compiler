@@ -80,7 +80,12 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
             }
         }
         current_dec = ctx;
-        visitBlock(ctx.block());
+        SExpressionsParser.BlockContext decBlock = ctx.block();
+        decBlock.t = visit(decBlock);
+        if (decBlock.t != Types.toType(ctx.type())) {
+            SExpressionsParser.ExprContext lastDecBlockExpr = decBlock.expr(decBlock.exprs.size() - 1);
+            throw new TypeException().functionBodyError(ctx, lastDecBlockExpr, decBlock.t);
+        }
         return Types.UNKNOWN;
     }
 
@@ -98,7 +103,7 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
     public Types visitBlock(SExpressionsParser.BlockContext ctx) {
         for (int i = 0; i < ctx.exprs.size(); i++) {
             visit(ctx.expr(i));
-            if(i == ctx.exprs.size() - 1){
+            if (i == ctx.exprs.size() - 1) {
                 return visit(ctx.expr(i));
             }
         }
@@ -121,7 +126,7 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
             SExpressionsParser.ExprContext lastElseBlockExpr = elseBlock.expr(elseBlock.exprs.size() - 1);
             throw new TypeException().branchMismatchError(ctx, lastThenBlockExpr, thenBlock.t, elseBlock, elseBlock.t);
         }
-        return Types.UNKNOWN;
+        return thenBlock.t;
     }
 
     @Override
@@ -163,8 +168,17 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     @Override
     public Types visitWhileExpr(SExpressionsParser.WhileExprContext ctx) {
-        // TODO: modify and complete this method.
-
+        SExpressionsParser.ExprContext conditionExpr = ctx.expr();
+        conditionExpr.t = visit(conditionExpr);
+        SExpressionsParser.BlockContext whileBlock = ctx.block();
+        whileBlock.t = visit(whileBlock);
+        if (conditionExpr.t != Types.BOOL) {
+            throw new TypeException().conditionError(ctx, conditionExpr, conditionExpr.t);
+        }
+        if (whileBlock.t != Types.UNIT) {
+            SExpressionsParser.ExprContext lastWhileBlockExpr = whileBlock.expr(whileBlock.exprs.size() - 1);
+            throw new TypeException().loopBodyError(ctx, lastWhileBlockExpr, whileBlock.t);
+        }
         return Types.UNKNOWN;
     }
 
