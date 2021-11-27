@@ -74,7 +74,7 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
         current_dec = ctx;
         SExpressionsParser.BlockContext decBlock = ctx.block();
         decBlock.t = visit(decBlock);
-        if (decBlock.t != Types.toType(ctx.type())) {
+        if (decBlock.t != Types.toType(current_dec.type())) {
             SExpressionsParser.ExprContext lastDecBlockExpr = decBlock.expr(decBlock.exprs.size() - 1);
             throw new TypeException().functionBodyError(ctx, lastDecBlockExpr, decBlock.t);
         }
@@ -95,9 +95,10 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
     public Types visitBlock(SExpressionsParser.BlockContext ctx) {
         for (int i = 0; i < ctx.exprs.size(); i++) {
             if (i == ctx.exprs.size() - 1) {
-                return visit(ctx.expr(i));
+                ctx.exprs.get(i).t = visit(ctx.expr(i));
+                return ctx.exprs.get(i).t;
             }
-            visit(ctx.expr(i));
+            ctx.exprs.get(i).t = visit(ctx.expr(i));
         }
         return Types.UNKNOWN;
     }
@@ -118,7 +119,8 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
             SExpressionsParser.ExprContext lastElseBlockExpr = elseBlock.expr(elseBlock.exprs.size() - 1);
             throw new TypeException().branchMismatchError(ctx, lastThenBlockExpr, thenBlock.t, lastElseBlockExpr, elseBlock.t);
         }
-        return thenBlock.t;
+        // both blocks (thenBlock and elseBlock) have the same type
+        return elseBlock.t;
     }
 
     @Override
@@ -202,18 +204,19 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
         if (!global_funcs.containsKey(id.Idfr().getText())) {
             throw new TypeException().undeclaredFuncError(current_dec, id, Types.UNKNOWN);
         }
-        List<SExpressionsParser.Typed_idfrContext> funcParamList = global_funcs.get(id.Idfr().getText()).params;
+        SExpressionsParser.DecContext funcDec = global_funcs.get(id.Idfr().getText());
+                List<SExpressionsParser.Typed_idfrContext> funcParamList = funcDec.params;
         if (block.expr().size() != funcParamList.size()) {
             throw new TypeException().argumentNumberError(ctx, block, Types.UNKNOWN);
         }
-        for (int i = 0; i < global_funcs.get(id.Idfr().getText()).params.size(); i++) {
+        for (int i = 0; i < funcDec.params.size(); i++) {
             block.expr(i).t = visit(block.expr(i));
             if (block.expr(i).t != Types.toType(funcParamList.get(i).type())) {
                 throw new TypeException().argumentError(ctx, block.expr(i), block.expr(i).t);
             }
         }
         visitBlock(ctx.block());
-        return Types.toType(global_funcs.get(id.Idfr().getText()).type());
+        return Types.toType(funcDec.type());
     }
 
     @Override
