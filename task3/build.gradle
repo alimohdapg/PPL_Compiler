@@ -5,18 +5,33 @@ plugins {
 sourceSets {
     main {
         java {
-            srcDirs = ['src']
+            srcDirs = ['src/main']
+        }
+    }
+    test {
+        java {
+            srcDirs = ["src/test"]
         }
     }
 }
 
+test {
+    useJUnitPlatform()
+}
+
+repositories {
+    mavenCentral()
+}
+
 task run(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'calculator.Task3'
+    mainClass = 'language.Task3'
     standardInput = System.in
     // standardOutput defaults to System.out.
 }
 
 dependencies {
     implementation files ('../antlr-4.9.2-complete.jar')
+    implementation files ('../rars_46ab74d.jar')
+    implementation 'org.junit.jupiter:junit-jupiter:5.7.0'
 }
