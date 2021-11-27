@@ -14,7 +14,6 @@ public class RARSInterface
 
     public static void main(String[] args) throws IOException
     {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringBuilder sb = new StringBuilder();
         String line;
@@ -44,7 +43,6 @@ public class RARSInterface
         }
         // check any final register or memory state
         System.out.println(p.getRegisterValue("a0"));
-
     }
 
 }

@@ -1,4 +1,5 @@
 // Generated from C:/Users/alimo/IdeaProjects/230936_C&CA_Coursework/task3/src/main\SExpressions.g4 by ANTLR 4.9.2
+package language;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
