@@ -11,6 +11,12 @@ public class Worker extends LanguageBaseVisitor<Object> {
     }
 
     @Override
+    public Object visitWholeprog(LanguageParser.WholeprogContext ctx) {
+        visit(ctx.prog());
+        return null;
+    }
+
+    @Override
     public Object visitDecOnly(LanguageParser.DecOnlyContext ctx) {
         visit(ctx.dec());
         return null;
@@ -149,7 +155,7 @@ public class Worker extends LanguageBaseVisitor<Object> {
     }
 
     @Override
-    public Object visitRepeatLoop(LanguageParser.RepeatLooopContext ctx) {
+    public Object visitRepeatLoop(LanguageParser.RepeatLoopContext ctx) {
         ArrayList<Object> repeatLoopList = new ArrayList<>();
         repeatLoopList.add("RepeatLoop");
         repeatLoopList.add(visit(ctx.exp()));

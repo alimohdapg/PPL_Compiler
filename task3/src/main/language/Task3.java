@@ -17,8 +17,10 @@ public class Task3 {
 
         // create a parser that feeds off the tokens buffer
         SExpressionsParser parser = new SExpressionsParser(tokens);
-        ParseTree tree = parser.prog(); // begin parsing at prog rule
+        SExpressionsParser.ProgContext tree = parser.prog(); // begin parsing at prog rule
 
-
+        Worker worker = new Worker(tree);
+        String riscCode = worker.getOutputString();
+        System.out.println(riscCode);
     }
 }

@@ -5,6 +5,10 @@ grammar Language;
 }
 
 //Parser Rules:
+wholeprog
+    : prog EOF
+    ;
+
 prog
 	: dec                               # DecOnly
 	| dec prog                          # DecProg
