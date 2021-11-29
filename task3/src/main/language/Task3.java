@@ -1,7 +1,6 @@
 package language;
 
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.tree.ParseTree;
 
 public class Task3 {
 
@@ -20,7 +19,7 @@ public class Task3 {
         SExpressionsParser.ProgContext tree = parser.prog(); // begin parsing at prog rule
 
         Worker worker = new Worker(tree);
-        String riscCode = worker.getOutputString();
+        String riscCode = worker.getOutput();
         System.out.println(riscCode);
     }
 }

@@ -11,92 +11,182 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     int labelNum = 0;
     StringBuilder output = new StringBuilder();
 
-    public Worker(SExpressionsParser.ProgContext prog){
+    public Worker(SExpressionsParser.ProgContext prog) {
         visitProg(prog);
     }
 
-    public String getOutputString() {
+    public String getOutput() {
         output.append("\nlw                 a0, 4(sp)");
         return """
-                .macro PushImm($number)
-                	li                  t1, $number
-                	sw                  t1, (sp)
-                    addi        sp, sp, -4
-                .end_macro
-                
-                .macro True()
-                    li                  t1, 1
-                    sw                  t1, (sp)
-                    addi        sp, sp, -4
-                .end_macro
-                
-                .macro False()
-                    li                  t1, 0
-                    sw                  t1, (sp)
-                    addi        sp, sp, -4
-                .end_macro
-                
-                .macro CompGt()
-                    lw                  t1, 4(sp)
-                	addi        sp, sp, 4
-                	lw                  t2, 4(sp)
-                	addi        sp, sp, 4
-                	bgt                 t1, t2, true
-                	b                   false
-                	true:
-                	    True()
-                	false:
-                	    False()
-                .end_macro
-                            	
-                .macro Plus()
-                	lw                  t1, 4(sp)
-                	addi        sp, sp, 4
-                	lw                  t2, 4(sp)
-                	addi        sp, sp, 4
-                	add                 t2, t2, t1
-                	sw                  t2, (sp)
-                	addi        sp, sp, -4
-                .end_macro
-                
-                .macro Minus()
-                	lw                  t1, 4(sp)
-                	addi        sp, sp, 4
-                	lw                  t2, 4(sp)
-                	addi        sp, sp, 4
-                	sub                 t2, t2, t1
-                	sw                  t2, (sp)
-                	addi        sp, sp, -4
-                .end_macro
-                            	
-                .macro Times()
-                	lw                  t1, 4(sp)
-                	addi        sp, sp, 4
-                	lw                  t2, 4(sp)
-                	addi        sp, sp, 4
-                	mul                 t2, t2, t1
-                	sw                  t2, (sp)
-                	addi        sp, sp, -4
-                .end_macro
-                            	
-                .macro Divide()
-                	lw                  t1, 4(sp)
-                	addi        sp, sp, 4
-                	lw                  t2, 4(sp)
-                	addi        sp, sp, 4
-                	div                 t2, t2, t1
-                	sw                  t2, (sp)
-                	addi        sp, sp, -4
-                .end_macro
-                
-                .macro Exit()
-                    li                  a7, 10
-                    ecall
-                .end_macro
-                """ + output;
+                       .macro PushImm($number)
+                       	li                  t1, $number
+                       	sw                  t1, (sp)
+                        addi        sp, sp, -4
+                       .end_macro
+                                       
+                       .macro True()
+                        li                  t1, 1
+                        sw                  t1, (sp)
+                        addi        sp, sp, -4
+                       .end_macro
+                                       
+                       .macro False()
+                        li                  t1, 0
+                        sw                  t1, (sp)
+                        addi        sp, sp, -4
+                       .end_macro
+                                       
+                       .macro CompEq()
+                        lw                  t1, 4(sp)
+                       	addi        sp, sp, 4
+                       	lw                  t2, 4(sp)
+                       	addi        sp, sp, 4
+                       	beq                 t1, t2, true
+                       	b                   false
+                       	true:
+                       	    True()
+                       	false:
+                       	    False()
+                       .end_macro
+                                       
+                       .macro CompLt()
+                        lw                  t1, 4(sp)
+                       	addi        sp, sp, 4
+                       	lw                  t2, 4(sp)
+                       	addi        sp, sp, 4
+                       	blt                 t1, t2, true
+                       	b                   false
+                       	true:
+                       	    True()
+                       	false:
+                       	    False()
+                       .end_macro
+                                       
+                       .macro CompGt()
+                        lw                  t1, 4(sp)
+                       	addi        sp, sp, 4
+                       	lw                  t2, 4(sp)
+                       	addi        sp, sp, 4
+                       	bgt                 t1, t2, true
+                       	b                   false
+                       	true:
+                       	    True()
+                       	false:
+                       	    False()
+                       .end_macro
+                                       
+                       .macro CompLe()
+                        lw                  t1, 4(sp)
+                       	addi        sp, sp, 4
+                       	lw                  t2, 4(sp)
+                       	addi        sp, sp, 4
+                       	ble                 t1, t2, true
+                       	b                   false
+                       	true:
+                       	    True()
+                       	false:
+                       	    False()
+                       .end_macro
+                                       
+                       .macro CompGe()
+                        lw                  t1, 4(sp)
+                       	addi        sp, sp, 4
+                       	lw                  t2, 4(sp)
+                       	addi        sp, sp, 4
+                       	bge                 t1, t2, true
+                       	b                   false
+                       	true:
+                       	    True()
+                       	false:
+                       	    False()
+                       .end_macro
+                                   	
+                       .macro Plus()
+                       	lw                  t1, 4(sp)
+                       	addi        sp, sp, 4
+                       	lw                  t2, 4(sp)
+                       	addi        sp, sp, 4
+                       	add                 t2, t2, t1
+                       	sw                  t2, (sp)
+                       	addi        sp, sp, -4
+                       .end_macro
+                                       
+                       .macro Minus()
+                       	lw                  t1, 4(sp)
+                       	addi        sp, sp, 4
+                       	lw                  t2, 4(sp)
+                       	addi        sp, sp, 4
+                       	sub                 t2, t2, t1
+                       	sw                  t2, (sp)
+                       	addi        sp, sp, -4
+                       .end_macro
+                                   	
+                       .macro Times()
+                       	lw                  t1, 4(sp)
+                       	addi        sp, sp, 4
+                       	lw                  t2, 4(sp)
+                       	addi        sp, sp, 4
+                       	mul                 t2, t2, t1
+                       	sw                  t2, (sp)
+                       	addi        sp, sp, -4
+                       .end_macro
+                                   	
+                       .macro Divide()
+                       	lw                  t1, 4(sp)
+                       	addi        sp, sp, 4
+                       	lw                  t2, 4(sp)
+                       	addi        sp, sp, 4
+                       	div                 t2, t2, t1
+                       	sw                  t2, (sp)
+                       	addi        sp, sp, -4
+                       .end_macro
+                                              
+                       .macro BoolAnd()
+                        Plus()
+                        lw                  t1, 4(sp)
+                        addi        sp, sp, 4
+                        li                  t2, 2
+                        beq                 t1, t2, true
+                        b                   false
+                       	true:
+                       	    True()
+                       	false:
+                       	    False()
+                       .end_macro
+                                              
+                       .macro BoolOr()
+                        Plus()
+                        lw                  t1, 4(sp)
+                        addi        sp, sp, 4
+                        bne                 t1, x0, true
+                        b                   false
+                       	true:
+                       	    True()
+                       	false:
+                       	    False()
+                       .end_macro
+                                              
+                       .macro BoolXor()
+                        Plus()
+                        lw                  t1, 4(sp)
+                        addi        sp, sp, 4
+                        li                  t2, 1
+                        beq                 t1, t2, true
+                        b                   false
+                       	true:
+                       	    True()
+                       	false:
+                       	    False()
+                       .end_macro
+                                       
+                       .macro Exit()
+                           li                  a7, 10
+                           ecall
+                       .end_macro
+                       """ + output;
     }
 
-    public String newLabel(){
+    public String newLabel() {
         labelNum++;
         return "label" + labelNum;
     }
@@ -137,20 +227,23 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitBinExpr(SExpressionsParser.BinExprContext ctx) {
-        SExpressionsParser.ExprContext operand1 = ctx.expr(0);
-        SExpressionsParser.ExprContext operand2 = ctx.expr(1);
+        visit(ctx.expr(0));
+        visit(ctx.expr(1));
         switch (((TerminalNode) (ctx.binop().getChild(0))).getSymbol().getType()) {
-            case SExpressionsParser.Eq, SExpressionsParser.LessEq, SExpressionsParser.GtrEq, SExpressionsParser.Gtr, SExpressionsParser.Less -> {
-
-            }
-            case SExpressionsParser.Plus, SExpressionsParser.Minus, SExpressionsParser.Times, SExpressionsParser.Div -> {
-
-            }
-            case SExpressionsParser.And, SExpressionsParser.Or, SExpressionsParser.Xor -> {
-
-            }
-            default -> throw new RuntimeException("Shouldn't be here - wrong binary operator.");
-        };
+            case SExpressionsParser.Eq -> output.append("\nCompEq()");
+            case SExpressionsParser.Less -> output.append("\nCompLt()");
+            case SExpressionsParser.Gtr -> output.append("\nCompGt()");
+            case SExpressionsParser.LessEq -> output.append("\nCompLe()");
+            case SExpressionsParser.GtrEq -> output.append("\nCompGe()");
+            case SExpressionsParser.Plus -> output.append("\nPlus()");
+            case SExpressionsParser.Minus -> output.append("\nMinus()");
+            case SExpressionsParser.Times -> output.append("\nTimes()");
+            case SExpressionsParser.Div -> output.append("\nDivide()");
+            case SExpressionsParser.And -> output.append("\nBoolAnd()");
+            case SExpressionsParser.Or -> output.append("\nBoolOr()");
+            case SExpressionsParser.Xor -> output.append("\nBoolXor()");
+        }
+        ;
         return null;
     }
 
@@ -185,7 +278,6 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         String name = ctx.identifier().getText();
         output.append("\nPushAbs  ");
         output.append(local_vars.get(name));
-        output.append("\n");
         return null;
     }
 
@@ -193,7 +285,6 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     public String visitIntExpr(SExpressionsParser.IntExprContext ctx) {
         output.append("\nPushImm    ");
         output.append(ctx.getText());
-        output.append("\n");
         return null;
     }
 
