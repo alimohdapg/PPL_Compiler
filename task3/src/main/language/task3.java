@@ -2,7 +2,7 @@ package language;
 
 import org.antlr.v4.runtime.*;
 
-public class Task3 {
+public class task3 {
 
     public static void main(String[] args) throws Exception {
         // create a CharStream that reads from standard input

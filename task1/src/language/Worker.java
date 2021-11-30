@@ -32,7 +32,7 @@ public class Worker extends LanguageBaseVisitor<Object> {
     @Override
     public Object visitDec(LanguageParser.DecContext ctx) {
         ArrayList<Object> decList = new ArrayList<>();
-        decList.add("FuncDecl");
+        decList.add("FunDecl");
         decList.add("Idfr(\"" + ctx.Idfr().getText() + "\")");
         decList.add(visit(ctx.type()));
         decList.add(visit(ctx.vardec()));

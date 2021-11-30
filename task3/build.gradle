@@ -25,7 +25,7 @@ repositories {
 
 task run(type: JavaExec) {
     classpath = sourceSets.main.runtimeClasspath
-    mainClass = 'language.Task3'
+    mainClass = 'language.task3'
     standardInput = System.in
     // standardOutput defaults to System.out.
 }

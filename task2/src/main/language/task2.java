@@ -3,7 +3,7 @@ package language;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-public class Task2 {
+public class task2 {
 
     public static void main(String[] args) throws Exception {
         // create a CharStream that reads from standard input
