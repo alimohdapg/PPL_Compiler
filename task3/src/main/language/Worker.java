@@ -42,11 +42,12 @@ public class Worker extends SExpressionsBaseVisitor<String> {
                        	lw                  t2, 4(sp)
                        	addi        sp, sp, 4
                        	beq                 t1, t2, true
-                       	b                   false
-                       	true:
-                       	    True()
                        	false:
                        	    False()
+                       	    b                   exit
+                       	true:
+                       	    True()
+                       	exit:
                        .end_macro
                                        
                        .macro CompLt()
@@ -55,11 +56,12 @@ public class Worker extends SExpressionsBaseVisitor<String> {
                        	lw                  t2, 4(sp)
                        	addi        sp, sp, 4
                        	blt                 t1, t2, true
-                       	b                   false
-                       	true:
-                       	    True()
                        	false:
                        	    False()
+                       	    b                   exit
+                       	true:
+                       	    True()
+                       	exit:
                        .end_macro
                                        
                        .macro CompGt()
@@ -68,11 +70,12 @@ public class Worker extends SExpressionsBaseVisitor<String> {
                        	lw                  t2, 4(sp)
                        	addi        sp, sp, 4
                        	bgt                 t1, t2, true
-                       	b                   false
-                       	true:
-                       	    True()
                        	false:
                        	    False()
+                       	    b                   exit
+                       	true:
+                       	    True()
+                       	exit:
                        .end_macro
                                        
                        .macro CompLe()
@@ -81,11 +84,12 @@ public class Worker extends SExpressionsBaseVisitor<String> {
                        	lw                  t2, 4(sp)
                        	addi        sp, sp, 4
                        	ble                 t1, t2, true
-                       	b                   false
-                       	true:
-                       	    True()
                        	false:
                        	    False()
+                       	    b                   exit
+                       	true:
+                       	    True()
+                       	exit:
                        .end_macro
                                        
                        .macro CompGe()
@@ -94,11 +98,12 @@ public class Worker extends SExpressionsBaseVisitor<String> {
                        	lw                  t2, 4(sp)
                        	addi        sp, sp, 4
                        	bge                 t1, t2, true
-                       	b                   false
-                       	true:
-                       	    True()
                        	false:
                        	    False()
+                       	    b                   exit
+                       	true:
+                       	    True()
+                       	exit:
                        .end_macro
                                    	
                        .macro Plus()
@@ -147,11 +152,12 @@ public class Worker extends SExpressionsBaseVisitor<String> {
                         addi        sp, sp, 4
                         li                  t2, 2
                         beq                 t1, t2, true
-                        b                   false
+                        false:
+                       	    False()
+                       	    b                   exit
                        	true:
                        	    True()
-                       	false:
-                       	    False()
+                       	exit:
                        .end_macro
                                               
                        .macro BoolOr()
@@ -159,11 +165,12 @@ public class Worker extends SExpressionsBaseVisitor<String> {
                         lw                  t1, 4(sp)
                         addi        sp, sp, 4
                         bne                 t1, x0, true
-                        b                   false
+                        false:
+                       	    False()
+                       	    b                   exit
                        	true:
                        	    True()
-                       	false:
-                       	    False()
+                       	exit:
                        .end_macro
                                               
                        .macro BoolXor()
@@ -172,14 +179,15 @@ public class Worker extends SExpressionsBaseVisitor<String> {
                         addi        sp, sp, 4
                         li                  t2, 1
                         beq                 t1, t2, true
-                        b                   false
+                        false:
+                       	    False()
+                       	    b                   exit
                        	true:
                        	    True()
-                       	false:
-                       	    False()
+                       	exit:
                        .end_macro
                                        
-                       .macro Exit()
+                       .macro FinalExit()
                            li                  a7, 10
                            ecall
                        .end_macro
@@ -222,7 +230,19 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitIfExpr(SExpressionsParser.IfExprContext ctx) {
-        return super.visitIfExpr(ctx);
+        visit(ctx.expr());
+        String thenBlock = newLabel();
+        String elseBlock = newLabel();
+        String exit = newLabel();
+        output.append("li                  t2, 1");
+        output.append("beq                 t1, t2, ").append(thenBlock);
+        output.append(elseBlock).append(":");
+        visit(ctx.block(1));
+        output.append("b").append(exit);
+        output.append(thenBlock).append(":");
+        visit(ctx.block(0));
+        output.append(exit).append(":");
+        return null;
     }
 
     @Override

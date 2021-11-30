@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="SExpressionsAnalyserTest" tests="19" skipped="0" failures="0" errors="0" timestamp="2021-11-27T20:29:04" hostname="ALIS_LAPTOP" time="0.224">
+<testsuite name="SExpressionsAnalyserTest" tests="19" skipped="0" failures="0" errors="0" timestamp="2021-11-30T01:05:15" hostname="ALIS_LAPTOP" time="0.178">
   <properties/>
-  <testcase name="test10()" classname="SExpressionsAnalyserTest" time="0.129"/>
-  <testcase name="test11()" classname="SExpressionsAnalyserTest" time="0.003"/>
-  <testcase name="test12()" classname="SExpressionsAnalyserTest" time="0.019"/>
+  <testcase name="test10()" classname="SExpressionsAnalyserTest" time="0.122"/>
+  <testcase name="test11()" classname="SExpressionsAnalyserTest" time="0.004"/>
+  <testcase name="test12()" classname="SExpressionsAnalyserTest" time="0.004"/>
   <testcase name="test13()" classname="SExpressionsAnalyserTest" time="0.005"/>
-  <testcase name="test14()" classname="SExpressionsAnalyserTest" time="0.003"/>
-  <testcase name="test15()" classname="SExpressionsAnalyserTest" time="0.005"/>
-  <testcase name="test16()" classname="SExpressionsAnalyserTest" time="0.004"/>
-  <testcase name="test17()" classname="SExpressionsAnalyserTest" time="0.006"/>
-  <testcase name="test18()" classname="SExpressionsAnalyserTest" time="0.002"/>
+  <testcase name="test14()" classname="SExpressionsAnalyserTest" time="0.002"/>
+  <testcase name="test15()" classname="SExpressionsAnalyserTest" time="0.002"/>
+  <testcase name="test16()" classname="SExpressionsAnalyserTest" time="0.002"/>
+  <testcase name="test17()" classname="SExpressionsAnalyserTest" time="0.002"/>
+  <testcase name="test18()" classname="SExpressionsAnalyserTest" time="0.001"/>
   <testcase name="test19()" classname="SExpressionsAnalyserTest" time="0.002"/>
-  <testcase name="test1()" classname="SExpressionsAnalyserTest" time="0.007"/>
-  <testcase name="test2()" classname="SExpressionsAnalyserTest" time="0.001"/>
+  <testcase name="test1()" classname="SExpressionsAnalyserTest" time="0.004"/>
+  <testcase name="test2()" classname="SExpressionsAnalyserTest" time="0.002"/>
   <testcase name="test3()" classname="SExpressionsAnalyserTest" time="0.002"/>
-  <testcase name="test4()" classname="SExpressionsAnalyserTest" time="0.003"/>
-  <testcase name="test5()" classname="SExpressionsAnalyserTest" time="0.003"/>
-  <testcase name="test6()" classname="SExpressionsAnalyserTest" time="0.003"/>
+  <testcase name="test4()" classname="SExpressionsAnalyserTest" time="0.002"/>
+  <testcase name="test5()" classname="SExpressionsAnalyserTest" time="0.004"/>
+  <testcase name="test6()" classname="SExpressionsAnalyserTest" time="0.001"/>
   <testcase name="test7()" classname="SExpressionsAnalyserTest" time="0.002"/>
-  <testcase name="test8()" classname="SExpressionsAnalyserTest" time="0.003"/>
-  <testcase name="test9()" classname="SExpressionsAnalyserTest" time="0.003"/>
+  <testcase name="test8()" classname="SExpressionsAnalyserTest" time="0.002"/>
+  <testcase name="test9()" classname="SExpressionsAnalyserTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
