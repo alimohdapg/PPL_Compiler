@@ -6,8 +6,9 @@ import java.util.*;
 
 public class Worker extends SExpressionsBaseVisitor<String> {
 
-    private final Map<String, SExpressionsParser.DecContext> global_funcs = new HashMap<>();
-    private final Map<String, Integer> local_vars = new HashMap<>();
+    //  local_vars stores the variable's name with its position in the function's parameter list,
+    // starting from 1 to n
+    private Map<String, Integer> local_vars = new HashMap<>();
     int labelNum = 0;
     StringBuilder output = new StringBuilder();
 
@@ -220,8 +221,10 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     public String visitDec(SExpressionsParser.DecContext ctx) {
         int numOfParams = ctx.params.size();
         int arSize = (2 + numOfParams) * 4;
-        for (int i = 0; i < numOfParams; i++) {
-            local_vars.put(ctx.params.get(i).identifier().Idfr().getText(), i);
+        System.out.println(arSize);
+        local_vars = new HashMap<>();
+        for (int i = 1; i < numOfParams + 1; i++) {
+            local_vars.put(ctx.params.get(i - 1).identifier().Idfr().getText(), i);
         }
         String id = ctx.identifier().Idfr().getText();
         output.append("\n").append(id).append("Enter:");
@@ -229,7 +232,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         output.append("\nsw                  ra, 0(sp)");
         output.append("\naddi        sp, sp, -4");
         visit(ctx.block());
-        output.append("\nlw                  ra, ").append(Integer.toString(arSize - 4)).append("(sp)");
+        output.append("\nlw                  ra, ").append(arSize).append("(sp)");
         output.append("\naddi        sp, sp, ").append(arSize);
         output.append("\nlw                  fp, 0(sp)");
         output.append("\njr                  ra");
@@ -318,7 +321,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         output.append("\naddi        sp, sp, -4");
         for (int i = ctx.block().expr().size() - 1; i >= 0; i--) {
             visit(ctx.block().expr(i));
-            output.append("\nsw                  a0, 0(sp)");
+            output.append("\nsw                  t1, 0(sp)");
             output.append("\naddi        sp, sp, -4");
         }
         output.append("\njal                 ").append(ctx.identifier().Idfr().getText()).append("Enter");
@@ -334,7 +337,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     @Override
     public String visitIdExpr(SExpressionsParser.IdExprContext ctx) {
         String name = ctx.identifier().Idfr().getText();
-        String offset = String.valueOf(4 * local_vars.get(ctx.identifier().Idfr().getText()));
+        String offset = String.valueOf(4 * local_vars.get(name) + 4);
         output.append("\nPushAbs    ").append(offset);
         return null;
     }

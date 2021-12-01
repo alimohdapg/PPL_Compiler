@@ -5,8 +5,10 @@ import org.antlr.v4.runtime.*;
 public class task3 {
 
     /**
-     * Takes an s-expression as
-     * @return Risc-V assembly code .
+     * Takes an s-expression from System.in as input and prints
+     * out risc-v assembly code.
+     *
+     * @return Risc-V assembly code.
      */
     public static void main(String[] args) throws Exception {
         // create a CharStream that reads from standard input
@@ -22,7 +24,10 @@ public class task3 {
         SExpressionsParser parser = new SExpressionsParser(tokens);
         SExpressionsParser.ProgContext tree = parser.prog(); // begin parsing at prog rule
 
+        // constructs a worker object and generates the output assembly code through
+        // traversing the ParseTree starting at ProgContext
         Worker worker = new Worker(tree);
+        // worker.getOutput returns the generated risc-v assembly code
         String riscCode = worker.getOutput();
         System.out.println(riscCode);
     }

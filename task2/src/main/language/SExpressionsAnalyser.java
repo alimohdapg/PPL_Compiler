@@ -7,7 +7,7 @@ import java.util.*;
 public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     private final Map<String, SExpressionsParser.DecContext> global_funcs = new HashMap<>();
-    private final Map<String, Types> local_vars = new HashMap<>();
+    private Map<String, Types> local_vars = new HashMap<>();
     private SExpressionsParser.DecContext current_dec = null;
     private final SExpressionsToString toStrConverter = new SExpressionsToString();
 
@@ -60,7 +60,7 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     @Override
     public Types visitDec(SExpressionsParser.DecContext ctx) {
-        HashMap<String, Types> local_vars = new HashMap<>();
+        local_vars = new HashMap<>();
         for (int i = 0; i < ctx.params.size(); i++) {
             SExpressionsParser.Typed_idfrContext currentParam = ctx.params.get(i);
             String name = currentParam.identifier().getText();
