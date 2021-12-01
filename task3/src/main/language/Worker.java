@@ -7,7 +7,7 @@ import java.util.*;
 public class Worker extends SExpressionsBaseVisitor<String> {
 
     private final Map<String, SExpressionsParser.DecContext> global_funcs = new HashMap<>();
-    private final Map<String, String> local_vars = new HashMap<>();
+    private final Map<String, Integer> local_vars = new HashMap<>();
     int labelNum = 0;
     StringBuilder output = new StringBuilder();
 
@@ -16,12 +16,20 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     }
 
     public String getOutput() {
-        output.append("\nlw                 a0, 4(sp)");
+        output.append("\nlw                  a0, 4(sp)");
+        output.append("\nFinalExit()");
         return """
                        .macro PushImm($number)
                        	li                  t1, $number
                        	sw                  t1, (sp)
                         addi        sp, sp, -4
+                       .end_macro
+                       
+                       .macro PushAbs($offset)
+                        lw                  t1, $offset(fp)
+                        sw                  t1, (sp)
+                        addi        sp, sp, -4
+                       
                        .end_macro
                                        
                        .macro True()
@@ -210,7 +218,11 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitDec(SExpressionsParser.DecContext ctx) {
-        int arSize = (2 + ctx.params.size()) * 4;
+        int numOfParams = ctx.params.size();
+        int arSize = (2 + numOfParams) * 4;
+        for (int i = 0; i < numOfParams; i++) {
+            local_vars.put(ctx.params.get(i).identifier().Idfr().getText(), i);
+        }
         String id = ctx.identifier().Idfr().getText();
         output.append("\n").append(id).append("Enter:");
         output.append("\nmv                  fp, sp");
@@ -226,12 +238,14 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitTyped_idfr(SExpressionsParser.Typed_idfrContext ctx) {
-        return super.visitTyped_idfr(ctx);
+        String offset = String.valueOf(4 * local_vars.get(ctx.identifier().Idfr().getText()));
+        output.append("\nlw                  a0, ").append(offset).append("(fp)");
+        return null;
     }
 
     @Override
     public String visitType(SExpressionsParser.TypeContext ctx) {
-        return super.visitType(ctx);
+        return null;
     }
 
     @Override
@@ -252,7 +266,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         output.append("\nbeq                 t1, t2, ").append(thenBlock);
         output.append("\n").append(elseBlock).append(":");
         visit(ctx.block(1));
-        output.append("\nb").append(exit);
+        output.append("\nb                   ").append(thenBlock);
         output.append("\n").append(thenBlock).append(":");
         visit(ctx.block(0));
         output.append("\n").append(exit).append(":");
@@ -292,7 +306,10 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitAsgmtExpr(SExpressionsParser.AsgmtExprContext ctx) {
-        return super.visitAsgmtExpr(ctx);
+        String offset = String.valueOf(4 * local_vars.get(ctx.identifier().Idfr().getText()));
+        visit(ctx.expr());
+        output.append("\nsw                  a0, ").append(offset).append("(fp)");
+        return null;
     }
 
     @Override
@@ -304,7 +321,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
             output.append("\nsw                  a0, 0(sp)");
             output.append("\naddi        sp, sp, -4");
         }
-        output.append("\njal                  ").append(ctx.identifier().Idfr().getText()).append("Enter");
+        output.append("\njal                 ").append(ctx.identifier().Idfr().getText()).append("Enter");
         return null;
     }
 
@@ -317,15 +334,14 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     @Override
     public String visitIdExpr(SExpressionsParser.IdExprContext ctx) {
         String name = ctx.identifier().Idfr().getText();
-        output.append("\nPushAbs  ");
-        output.append(local_vars.get(name));
+        String offset = String.valueOf(4 * local_vars.get(ctx.identifier().Idfr().getText()));
+        output.append("\nPushAbs    ").append(offset);
         return null;
     }
 
     @Override
     public String visitIntExpr(SExpressionsParser.IntExprContext ctx) {
-        output.append("\nPushImm    ");
-        output.append(ctx.integer().IntLit().getText());
+        output.append("\nPushImm    ").append(ctx.integer().IntLit().getText());
         return null;
     }
 
