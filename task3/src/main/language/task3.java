@@ -4,6 +4,10 @@ import org.antlr.v4.runtime.*;
 
 public class task3 {
 
+    /**
+     * Takes an s-expression as
+     * @return Risc-V assembly code .
+     */
     public static void main(String[] args) throws Exception {
         // create a CharStream that reads from standard input
         CharStream input = CharStreams.fromStream(System.in);

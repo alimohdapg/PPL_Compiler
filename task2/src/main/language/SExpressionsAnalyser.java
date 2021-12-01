@@ -60,6 +60,7 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
 
     @Override
     public Types visitDec(SExpressionsParser.DecContext ctx) {
+        HashMap<String, Types> local_vars = new HashMap<>();
         for (int i = 0; i < ctx.params.size(); i++) {
             SExpressionsParser.Typed_idfrContext currentParam = ctx.params.get(i);
             String name = currentParam.identifier().getText();
@@ -77,7 +78,7 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
         current_dec = ctx;
         SExpressionsParser.BlockContext decBlock = ctx.block();
         decBlock.t = visit(decBlock);
-        if (decBlock.t != Types.toType(current_dec.type())) {
+        if (Types.toType(current_dec.type()) != decBlock.t) {
             SExpressionsParser.ExprContext lastDecBlockExpr = decBlock.expr(decBlock.exprs.size() - 1);
             throw new TypeException().functionBodyError(ctx, lastDecBlockExpr, decBlock.t);
         }
@@ -208,7 +209,7 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
             throw new TypeException().undeclaredFuncError(current_dec, id, Types.UNKNOWN);
         }
         SExpressionsParser.DecContext funcDec = global_funcs.get(id.Idfr().getText());
-                List<SExpressionsParser.Typed_idfrContext> funcParamList = funcDec.params;
+        List<SExpressionsParser.Typed_idfrContext> funcParamList = funcDec.params;
         if (block.expr().size() != funcParamList.size()) {
             throw new TypeException().argumentNumberError(ctx, block, Types.UNKNOWN);
         }
