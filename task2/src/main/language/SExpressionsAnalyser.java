@@ -47,7 +47,10 @@ public class SExpressionsAnalyser extends SExpressionsBaseVisitor<Types> {
                 }
                 found_main = true;
             }
-            visitDec(dec);
+        }
+        for (int i = 0; i < ctx.decs.size(); ++i) {
+            SExpressionsParser.DecContext dec = ctx.decs.get(i);
+            visit(dec);
         }
         if (!found_main) {
             throw new TypeException().noMainFuncError();

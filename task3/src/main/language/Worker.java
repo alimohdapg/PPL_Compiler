@@ -229,7 +229,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         output.append("\nsw                  ra, 0(sp)");
         output.append("\naddi        sp, sp, -4");
         visit(ctx.block());
-        output.append("\nlw                  ra, 4(sp)");
+        output.append("\nlw                  ra, ").append(Integer.toString(arSize - 4)).append("(sp)");
         output.append("\naddi        sp, sp, ").append(arSize);
         output.append("\nlw                  fp, 0(sp)");
         output.append("\njr                  ra");

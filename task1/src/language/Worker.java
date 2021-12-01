@@ -170,7 +170,7 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitNoArg(LanguageParser.NoArgContext ctx) {
-        return new ArrayList<>();
+        return "";
     }
 
     @Override
