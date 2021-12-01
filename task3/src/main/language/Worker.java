@@ -201,7 +201,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitProg(SExpressionsParser.ProgContext ctx) {
-        output.append("\n.text\n\n");
+        output.append("\n.text\n");
         for (int i = 0; i < ctx.decs.size(); i++) {
             visitDec(ctx.dec(i));
         }
@@ -210,6 +210,17 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitDec(SExpressionsParser.DecContext ctx) {
+        int arSize = (2 + ctx.params.size()) * 4;
+        String id = ctx.identifier().Idfr().getText();
+        output.append("\n").append(id).append("Enter:");
+        output.append("\nmv                  fp, sp");
+        output.append("\nsw                  ra, 0(sp)");
+        output.append("\naddi        sp, sp, -4");
+        visit(ctx.block());
+        output.append("\nlw                  ra, 4(sp)");
+        output.append("\naddi        sp, sp, ").append(arSize);
+        output.append("\nlw                  fp, 0(sp)");
+        output.append("\njr                  ra");
         return null;
     }
 
@@ -225,7 +236,10 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitBlock(SExpressionsParser.BlockContext ctx) {
-        return super.visitBlock(ctx);
+        for (int i = 0; i < ctx.expr().size(); i++) {
+            visit(ctx.expr(i));
+        }
+        return null;
     }
 
     @Override
@@ -234,14 +248,14 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         String thenBlock = newLabel();
         String elseBlock = newLabel();
         String exit = newLabel();
-        output.append("li                  t2, 1");
-        output.append("beq                 t1, t2, ").append(thenBlock);
-        output.append(elseBlock).append(":");
+        output.append("\nli                  t2, 1");
+        output.append("\nbeq                 t1, t2, ").append(thenBlock);
+        output.append("\n").append(elseBlock).append(":");
         visit(ctx.block(1));
-        output.append("b").append(exit);
-        output.append(thenBlock).append(":");
+        output.append("\nb").append(exit);
+        output.append("\n").append(thenBlock).append(":");
         visit(ctx.block(0));
-        output.append(exit).append(":");
+        output.append("\n").append(exit).append(":");
         return null;
     }
 
@@ -263,7 +277,6 @@ public class Worker extends SExpressionsBaseVisitor<String> {
             case SExpressionsParser.Or -> output.append("\nBoolOr()");
             case SExpressionsParser.Xor -> output.append("\nBoolXor()");
         }
-        ;
         return null;
     }
 
@@ -284,7 +297,15 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitFunInvocExpr(SExpressionsParser.FunInvocExprContext ctx) {
-        return super.visitFunInvocExpr(ctx);
+        output.append("\nsw                  fp, 0(sp)");
+        output.append("\naddi        sp, sp, -4");
+        for (int i = ctx.block().expr().size() - 1; i >= 0; i--) {
+            visit(ctx.block().expr(i));
+            output.append("\nsw                  a0, 0(sp)");
+            output.append("\naddi        sp, sp, -4");
+        }
+        output.append("\njal                  ").append(ctx.identifier().Idfr().getText()).append("Enter");
+        return null;
     }
 
     @Override
@@ -295,7 +316,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitIdExpr(SExpressionsParser.IdExprContext ctx) {
-        String name = ctx.identifier().getText();
+        String name = ctx.identifier().Idfr().getText();
         output.append("\nPushAbs  ");
         output.append(local_vars.get(name));
         return null;
@@ -304,7 +325,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     @Override
     public String visitIntExpr(SExpressionsParser.IntExprContext ctx) {
         output.append("\nPushImm    ");
-        output.append(ctx.getText());
+        output.append(ctx.integer().IntLit().getText());
         return null;
     }
 
