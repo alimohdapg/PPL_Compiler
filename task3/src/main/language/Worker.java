@@ -17,25 +17,12 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     }
 
     public String getOutput() {
-        output.append("\nFinalExit()");
         return """
-                       .macro PushImm($number)
-                       	li                  a0, $number
-                       	sw                  a0, (sp)
-                        addi        sp, sp, -4
-                       .end_macro
-                       
-                       .macro PushAbs($offset)
-                        lw                  a0, $offset(fp)
-                        sw                  a0, (sp)
-                        addi        sp, sp, -4
-                       
-                       .end_macro
-                                       
                        .macro CompEq()
                         lw                  t1, 4(sp)
                         addi         sp, sp, 4
-                       	beq                 a0, t1, true
+                        mv              t3, t2
+                       	beq                 t1, a0, true
                        	false:
                        	    li              t2, 0
                        	    b                   exit
@@ -46,64 +33,60 @@ public class Worker extends SExpressionsBaseVisitor<String> {
                                        
                        .macro CompLt()
                         lw                  t1, 4(sp)
-                       	addi        sp, sp, 4
-                       	lw                  t2, 4(sp)
-                       	addi        sp, sp, 4
-                       	blt                 t1, t2, true
+                        addi         sp, sp, 4
+                        mv              t3, t2
+                       	blt                 t1, a0, true
                        	false:
-                       	    False()
+                       	    li              t2, 0
                        	    b                   exit
                        	true:
-                       	    True()
+                       	    li              t2, 1
                        	exit:
                        .end_macro
                                        
                        .macro CompGt()
                         lw                  t1, 4(sp)
-                       	addi        sp, sp, 4
-                       	lw                  t2, 4(sp)
-                       	addi        sp, sp, 4
-                       	bgt                 t1, t2, true
+                        addi         sp, sp, 4
+                        mv              t3, t2
+                       	bgt                 t1, a0, true
                        	false:
-                       	    False()
+                       	    li              t2, 0
                        	    b                   exit
                        	true:
-                       	    True()
+                       	    li              t2, 1
                        	exit:
                        .end_macro
                                        
                        .macro CompLe()
                         lw                  t1, 4(sp)
-                       	addi        sp, sp, 4
-                       	lw                  t2, 4(sp)
-                       	addi        sp, sp, 4
-                       	ble                 t1, t2, true
+                        addi         sp, sp, 4
+                        mv              t3, t2
+                       	ble                 t1, a0, true
                        	false:
-                       	    False()
+                       	    li              t2, 0
                        	    b                   exit
                        	true:
-                       	    True()
+                       	    li              t2, 1
                        	exit:
                        .end_macro
                                        
                        .macro CompGe()
                         lw                  t1, 4(sp)
-                       	addi        sp, sp, 4
-                       	lw                  t2, 4(sp)
-                       	addi        sp, sp, 4
-                       	bge                 t1, t2, true
+                        addi         sp, sp, 4
+                        mv              t3, t2
+                       	bge                 t1, a0, true
                        	false:
-                       	    False()
+                       	    li              t2, 0
                        	    b                   exit
                        	true:
-                       	    True()
+                       	    li              t2, 1
                        	exit:
                        .end_macro
                                    	
                        .macro Plus()
                        	lw                  t1, 4(sp)
                        	add                 a0, t1, a0
-                       	addi        sp, sp, -4
+                       	addi        sp, sp, 4
                        .end_macro
                                        
                        .macro Minus()
@@ -125,43 +108,40 @@ public class Worker extends SExpressionsBaseVisitor<String> {
                        .end_macro
                                               
                        .macro BoolAnd()
-                        Plus()
-                        lw                  t1, 4(sp)
                         addi        sp, sp, 4
-                        li                  t2, 2
-                        beq                 t1, t2, true
+                        li                  t1, 1
+                       	bne                 t2, t1, false
+                       	bne                 t3, t1, false
+                       	b                   true
                         false:
-                       	    False()
+                       	    li              t2, 0
                        	    b                   exit
                        	true:
-                       	    True()
+                       	    li              t2, 1
                        	exit:
                        .end_macro
                                               
                        .macro BoolOr()
-                        Plus()
-                        lw                  t1, 4(sp)
                         addi        sp, sp, 4
-                        bne                 t1, x0, true
+                        li                  t1, 1
+                       	beq                 t2, t1, true
+                       	beq                 t3, t1, true
                         false:
-                       	    False()
+                       	    li              t2, 0
                        	    b                   exit
                        	true:
-                       	    True()
+                       	    li              t2, 1
                        	exit:
                        .end_macro
                                               
                        .macro BoolXor()
-                        Plus()
-                        lw                  t1, 4(sp)
                         addi        sp, sp, 4
-                        li                  t2, 1
-                        beq                 t1, t2, true
+                       	bne                 t2, t3, true
                         false:
-                       	    False()
+                       	    li              t2, 0
                        	    b                   exit
                        	true:
-                       	    True()
+                       	    li              t2, 1
                        	exit:
                        .end_macro
                                        
