@@ -16,6 +16,11 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         visitProg(prog);
     }
 
+    public String newLabel() {
+        labelNum++;
+        return "label" + labelNum;
+    }
+
     public String getOutput() {
         return """
                        .macro CompEq()
@@ -152,10 +157,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
                        """ + output;
     }
 
-    public String newLabel() {
-        labelNum++;
-        return "label" + labelNum;
-    }
+
 
     @Override
     public String visitProg(SExpressionsParser.ProgContext ctx) {

@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="WorkerTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2021-12-03T22:13:47" hostname="ALIS_LAPTOP" time="1.208">
+<testsuite name="WorkerTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2021-12-03T22:24:13" hostname="ALIS_LAPTOP" time="1.406">
   <properties/>
-  <testcase name="test1()" classname="WorkerTest" time="0.562"/>
-  <testcase name="test2()" classname="WorkerTest" time="0.138"/>
-  <testcase name="test3()" classname="WorkerTest" time="0.093"/>
-  <testcase name="test4()" classname="WorkerTest" time="0.076"/>
-  <testcase name="test5()" classname="WorkerTest" time="0.086"/>
-  <testcase name="test6()" classname="WorkerTest" time="0.078"/>
-  <testcase name="test7()" classname="WorkerTest" time="0.08"/>
+  <testcase name="test10()" classname="WorkerTest" time="0.507"/>
+  <testcase name="test11()" classname="WorkerTest" time="0.101"/>
+  <testcase name="test1()" classname="WorkerTest" time="0.095"/>
+  <testcase name="test2()" classname="WorkerTest" time="0.1"/>
+  <testcase name="test3()" classname="WorkerTest" time="0.079"/>
+  <testcase name="test4()" classname="WorkerTest" time="0.083"/>
+  <testcase name="test5()" classname="WorkerTest" time="0.084"/>
+  <testcase name="test6()" classname="WorkerTest" time="0.103"/>
+  <testcase name="test7()" classname="WorkerTest" time="0.091"/>
   <testcase name="test8()" classname="WorkerTest" time="0.08"/>
+  <testcase name="test9()" classname="WorkerTest" time="0.072"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

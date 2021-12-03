@@ -428,4 +428,131 @@ public class WorkerTest {
                 ]
                 """));
     }
+
+    @Test
+    public void test9() throws IOException{
+        assertEquals("NORMAL_TERMINATION\n" +
+                     "721", helper("""
+                [
+                  [FunDecl,
+                    Idfr("main"),
+                    IntType,
+                    [],
+                    [Skip,
+                      [FunInvoc,
+                        Idfr("huo68"),
+                        [
+                          [BinOpExpr,
+                            Eq,
+                            IntLit(0),
+                            IntLit(1)]
+                        ]
+                      ],
+                      IntLit(721)]
+                  ],
+                  [FunDecl,
+                    Idfr("huo68"),
+                    UnitType,
+                    [
+                      [Idfr("quv03"), BoolType]
+                    ],
+                    [
+                      [
+                        [Asgmt,
+                          Idfr("quv03"),
+                          [BinOpExpr,
+                            And,
+                            Idfr("quv03"),
+                            Idfr("quv03")]
+                        ]
+                      ],
+                      Skip,
+                      [IntLit(72)],
+                      [Asgmt,
+                        Idfr("quv03"),
+                        [BinOpExpr,
+                          Or,
+                          Idfr("quv03"),
+                          Idfr("quv03")]
+                      ]
+                    ]
+                  ]
+                ]
+                """));
+    }
+
+    @Test
+    public void test10() throws IOException {
+        assertEquals("NORMAL_TERMINATION\n" +
+                     "68", helper("""
+                [
+                  [FunDecl,
+                    Idfr("main"),
+                    IntType,
+                    [],
+                    [
+                      [IfStmt,
+                        [
+                          [FunInvoc,
+                            Idfr("tai90"),
+                            [
+                              [BinOpExpr,
+                                Less,
+                                IntLit(0),
+                                IntLit(1)],
+                              IntLit(226)]
+                          ]
+                        ],
+                        [IntLit(68)],
+                        [IntLit(58)]
+                      ]
+                    ]
+                  ],
+                  [FunDecl,
+                    Idfr("tai90"),
+                    BoolType,
+                    [
+                      [Idfr("qes14"), BoolType],
+                      [Idfr("xic24"), IntType]
+                    ],
+                    [Skip,
+                      [Skip],
+                      Idfr("qes14")]
+                  ]
+                ]
+                """));
+    }
+
+    @Test
+    public void test11() throws IOException {
+        assertEquals("NORMAL_TERMINATION\n" +
+                     "807", helper("""
+                [
+                  [FunDecl,
+                    Idfr("main"),
+                    IntType,
+                    [],
+                    [
+                      [FunInvoc,
+                        Idfr("hoa22"),
+                        [
+                          [BinOpExpr,
+                            Gtr,
+                            IntLit(2),
+                            IntLit(3)]
+                        ]
+                      ],
+                      IntLit(807)]
+                  ],
+                  [FunDecl,
+                    Idfr("hoa22"),
+                    UnitType,
+                    [
+                      [Idfr("qes14"), BoolType]
+                    ],
+                    [Skip, Skip]
+                  ]
+                ]
+                """));
+    }
 }
