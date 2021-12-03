@@ -17,45 +17,30 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     }
 
     public String getOutput() {
-        output.append("\nlw                  a0, 4(sp)");
         output.append("\nFinalExit()");
         return """
                        .macro PushImm($number)
-                       	li                  t1, $number
-                       	sw                  t1, (sp)
+                       	li                  a0, $number
+                       	sw                  a0, (sp)
                         addi        sp, sp, -4
                        .end_macro
                        
                        .macro PushAbs($offset)
-                        lw                  t1, $offset(fp)
-                        sw                  t1, (sp)
+                        lw                  a0, $offset(fp)
+                        sw                  a0, (sp)
                         addi        sp, sp, -4
                        
                        .end_macro
                                        
-                       .macro True()
-                        li                  t1, 1
-                        sw                  t1, (sp)
-                        addi        sp, sp, -4
-                       .end_macro
-                                       
-                       .macro False()
-                        li                  t1, 0
-                        sw                  t1, (sp)
-                        addi        sp, sp, -4
-                       .end_macro
-                                       
                        .macro CompEq()
                         lw                  t1, 4(sp)
-                       	addi        sp, sp, 4
-                       	lw                  t2, 4(sp)
-                       	addi        sp, sp, 4
-                       	beq                 t1, t2, true
+                        addi         sp, sp, 4
+                       	beq                 a0, t1, true
                        	false:
-                       	    False()
+                       	    li              t2, 0
                        	    b                   exit
                        	true:
-                       	    True()
+                       	    li              t2, 1
                        	exit:
                        .end_macro
                                        
@@ -117,42 +102,26 @@ public class Worker extends SExpressionsBaseVisitor<String> {
                                    	
                        .macro Plus()
                        	lw                  t1, 4(sp)
-                       	addi        sp, sp, 4
-                       	lw                  t2, 4(sp)
-                       	addi        sp, sp, 4
-                       	add                 t2, t2, t1
-                       	sw                  t2, (sp)
+                       	add                 a0, t1, a0
                        	addi        sp, sp, -4
                        .end_macro
                                        
                        .macro Minus()
                        	lw                  t1, 4(sp)
+                       	sub                 a0, t1, a0
                        	addi        sp, sp, 4
-                       	lw                  t2, 4(sp)
-                       	addi        sp, sp, 4
-                       	sub                 t2, t2, t1
-                       	sw                  t2, (sp)
-                       	addi        sp, sp, -4
                        .end_macro
                                    	
                        .macro Times()
                        	lw                  t1, 4(sp)
+                       	mul                 a0, t1, a0
                        	addi        sp, sp, 4
-                       	lw                  t2, 4(sp)
-                       	addi        sp, sp, 4
-                       	mul                 t2, t2, t1
-                       	sw                  t2, (sp)
-                       	addi        sp, sp, -4
                        .end_macro
                                    	
                        .macro Divide()
                        	lw                  t1, 4(sp)
+                       	div                 a0, t1, a0
                        	addi        sp, sp, 4
-                       	lw                  t2, 4(sp)
-                       	addi        sp, sp, 4
-                       	div                 t2, t2, t1
-                       	sw                  t2, (sp)
-                       	addi        sp, sp, -4
                        .end_macro
                                               
                        .macro BoolAnd()
@@ -221,7 +190,6 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     public String visitDec(SExpressionsParser.DecContext ctx) {
         int numOfParams = ctx.params.size();
         int arSize = (2 + numOfParams) * 4;
-        System.out.println(arSize);
         local_vars = new HashMap<>();
         for (int i = 1; i < numOfParams + 1; i++) {
             local_vars.put(ctx.params.get(i - 1).identifier().Idfr().getText(), i);
@@ -232,10 +200,14 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         output.append("\nsw                  ra, 0(sp)");
         output.append("\naddi        sp, sp, -4");
         visit(ctx.block());
-        output.append("\nlw                  ra, ").append(arSize).append("(sp)");
-        output.append("\naddi        sp, sp, ").append(arSize);
-        output.append("\nlw                  fp, 0(sp)");
-        output.append("\njr                  ra");
+        if(id.equals("main")){
+            output.append("\nFinalExit()");
+        } else {
+            output.append("\nlw                  ra, ").append("4").append("(sp)");
+            output.append("\naddi        sp, sp, ").append(arSize);
+            output.append("\nlw                  fp, 0(sp)");
+            output.append("\njr                  ra");
+        }
         return null;
     }
 
@@ -265,11 +237,10 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         String thenBlock = newLabel();
         String elseBlock = newLabel();
         String exit = newLabel();
-        output.append("\nli                  t2, 1");
-        output.append("\nbeq                 t1, t2, ").append(thenBlock);
+        output.append("\nbne                 t2, x0, ").append(thenBlock);
         output.append("\n").append(elseBlock).append(":");
         visit(ctx.block(1));
-        output.append("\nb                   ").append(thenBlock);
+        output.append("\nb                   ").append(exit);
         output.append("\n").append(thenBlock).append(":");
         visit(ctx.block(0));
         output.append("\n").append(exit).append(":");
@@ -279,6 +250,8 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     @Override
     public String visitBinExpr(SExpressionsParser.BinExprContext ctx) {
         visit(ctx.expr(0));
+        output.append("\nsw                  a0, 0(sp)");
+        output.append("\naddi         sp, sp, -4");
         visit(ctx.expr(1));
         switch (((TerminalNode) (ctx.binop().getChild(0))).getSymbol().getType()) {
             case SExpressionsParser.Eq -> output.append("\nCompEq()");
@@ -321,7 +294,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         output.append("\naddi        sp, sp, -4");
         for (int i = ctx.block().expr().size() - 1; i >= 0; i--) {
             visit(ctx.block().expr(i));
-            output.append("\nsw                  t1, 0(sp)");
+            output.append("\nsw                  a0, 0(sp)");
             output.append("\naddi        sp, sp, -4");
         }
         output.append("\njal                 ").append(ctx.identifier().Idfr().getText()).append("Enter");
@@ -336,15 +309,14 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitIdExpr(SExpressionsParser.IdExprContext ctx) {
-        String name = ctx.identifier().Idfr().getText();
-        String offset = String.valueOf(4 * local_vars.get(name) + 4);
-        output.append("\nPushAbs    ").append(offset);
+        String offset = String.valueOf(4 * local_vars.get(ctx.identifier().Idfr().getText()));
+        output.append("\nlw                  a0,").append(offset).append("(fp)\n");
         return null;
     }
 
     @Override
     public String visitIntExpr(SExpressionsParser.IntExprContext ctx) {
-        output.append("\nPushImm    ").append(ctx.integer().IntLit().getText());
+        output.append("\nli                  a0, ").append(ctx.integer().IntLit().getText());
         return null;
     }
 
