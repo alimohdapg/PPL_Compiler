@@ -26,133 +26,133 @@ public class Worker extends SExpressionsBaseVisitor<String> {
                        .macro CompEq()
                         lw                  t1, 4(sp)
                         addi         sp, sp, 4
-                        mv              t3, t2
-                       	beq                 t1, a0, true
-                       	false:
-                       	    li              t2, 0
-                       	    b                   exit
-                       	true:
-                       	    li              t2, 1
-                       	exit:
+                        mv                  t3, t2
+                        beq                 t1, a0, true
+                        false:
+                            li                  t2, 0
+                            b                   exit
+                        true:
+                            li                  t2, 1
+                        exit:
                        .end_macro
                                        
                        .macro CompLt()
                         lw                  t1, 4(sp)
                         addi         sp, sp, 4
-                        mv              t3, t2
-                       	blt                 t1, a0, true
-                       	false:
-                       	    li              t2, 0
-                       	    b                   exit
-                       	true:
-                       	    li              t2, 1
-                       	exit:
+                        mv                  t3, t2
+                        blt                 t1, a0, true
+                        false:
+                            li                  t2, 0
+                            b                   exit
+                        true:
+                            li                  t2, 1
+                        exit:
                        .end_macro
                                        
                        .macro CompGt()
                         lw                  t1, 4(sp)
                         addi         sp, sp, 4
-                        mv              t3, t2
-                       	bgt                 t1, a0, true
-                       	false:
-                       	    li              t2, 0
-                       	    b                   exit
-                       	true:
-                       	    li              t2, 1
-                       	exit:
+                        mv                  t3, t2
+                        bgt                 t1, a0, true
+                        false:
+                            li                  t2, 0
+                            b                   exit
+                        true:
+                            li                  t2, 1
+                        exit:
                        .end_macro
                                        
                        .macro CompLe()
                         lw                  t1, 4(sp)
                         addi         sp, sp, 4
-                        mv              t3, t2
-                       	ble                 t1, a0, true
-                       	false:
-                       	    li              t2, 0
-                       	    b                   exit
-                       	true:
-                       	    li              t2, 1
-                       	exit:
+                        mv                  t3, t2
+                        ble                 t1, a0, true
+                        false:
+                            li                  t2, 0
+                            b                   exit
+                        true:
+                            li                  t2, 1
+                        exit:
                        .end_macro
                                        
                        .macro CompGe()
                         lw                  t1, 4(sp)
                         addi         sp, sp, 4
-                        mv              t3, t2
-                       	bge                 t1, a0, true
-                       	false:
-                       	    li              t2, 0
-                       	    b                   exit
-                       	true:
-                       	    li              t2, 1
-                       	exit:
+                        mv                  t3, t2
+                        bge                 t1, a0, true
+                        false:
+                            li                  t2, 0
+                            b                   exit
+                        true:
+                            li                  t2, 1
+                        exit:
                        .end_macro
                                    	
                        .macro Plus()
-                       	lw                  t1, 4(sp)
-                       	add                 a0, t1, a0
-                       	addi        sp, sp, 4
+                        lw                  t1, 4(sp)
+                        add                 a0, t1, a0
+                        addi         sp, sp, 4
                        .end_macro
                                        
                        .macro Minus()
-                       	lw                  t1, 4(sp)
-                       	sub                 a0, t1, a0
-                       	addi        sp, sp, 4
+                        lw                  t1, 4(sp)
+                        sub                 a0, t1, a0
+                        addi         sp, sp, 4
                        .end_macro
                                    	
                        .macro Times()
-                       	lw                  t1, 4(sp)
-                       	mul                 a0, t1, a0
-                       	addi        sp, sp, 4
+                        lw                  t1, 4(sp)
+                        mul                 a0, t1, a0
+                        addi         sp, sp, 4
                        .end_macro
                                    	
                        .macro Divide()
-                       	lw                  t1, 4(sp)
-                       	div                 a0, t1, a0
-                       	addi        sp, sp, 4
+                        lw                  t1, 4(sp)
+                        div                 a0, t1, a0
+                        addi         sp, sp, 4
                        .end_macro
                                               
                        .macro BoolAnd()
-                        addi        sp, sp, 4
+                        addi         sp, sp, 4
                         li                  t1, 1
-                       	bne                 t2, t1, false
-                       	bne                 t3, t1, false
-                       	b                   true
+                        bne                 t2, t1, false
+                        bne                 t3, t1, false
+                        b                   true
                         false:
-                       	    li              t2, 0
-                       	    b                   exit
-                       	true:
-                       	    li              t2, 1
-                       	exit:
+                            li                  t2, 0
+                            b                   exit
+                        true:
+                            li                  t2, 1
+                        exit:
                        .end_macro
                                               
                        .macro BoolOr()
-                        addi        sp, sp, 4
+                        addi         sp, sp, 4
                         li                  t1, 1
-                       	beq                 t2, t1, true
-                       	beq                 t3, t1, true
+                        beq                 t2, t1, true
+                        beq                 t3, t1, true
                         false:
-                       	    li              t2, 0
-                       	    b                   exit
-                       	true:
-                       	    li              t2, 1
-                       	exit:
+                            li                  t2, 0
+                            b                   exit
+                        true:
+                            li                  t2, 1
+                        exit:
                        .end_macro
                                               
                        .macro BoolXor()
-                        addi        sp, sp, 4
-                       	bne                 t2, t3, true
+                        addi         sp, sp, 4
+                        bne                 t2, t3, true
                         false:
-                       	    li              t2, 0
-                       	    b                   exit
-                       	true:
-                       	    li              t2, 1
-                       	exit:
+                            li                  t2, 0
+                            b                   exit
+                        true:
+                            li                  t2, 1
+                        exit:
                        .end_macro
                                        
                        .macro FinalExit()
-                           li                  a7, 10
-                           ecall
+                        li                  a7, 10
+                        ecall
                        .end_macro
                        """ + output;
     }
@@ -161,7 +161,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitProg(SExpressionsParser.ProgContext ctx) {
-        output.append("\n.text\n");
+        output.append("\n\n.text\n");
         for (int i = 0; i < ctx.decs.size(); i++) {
             visitDec(ctx.dec(i));
         }
@@ -178,17 +178,17 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         }
         String id = ctx.identifier().Idfr().getText();
         output.append("\n").append(id).append("Enter:");
-        output.append("\nmv                  fp, sp");
-        output.append("\nsw                  ra, 0(sp)");
-        output.append("\naddi        sp, sp, -4");
+        output.append("\n\tmv                  fp, sp");
+        output.append("\n\tsw                  ra, 0(sp)");
+        output.append("\n\taddi        sp, sp, -4");
         visit(ctx.block());
         if(id.equals("main")){
-            output.append("\nFinalExit()");
+            output.append("\n\tFinalExit()");
         } else {
-            output.append("\nlw                  ra, ").append("4").append("(sp)");
-            output.append("\naddi        sp, sp, ").append(arSize);
-            output.append("\nlw                  fp, 0(sp)");
-            output.append("\njr                  ra");
+            output.append("\n\tlw                  ra, ").append("4").append("(sp)");
+            output.append("\n\taddi        sp, sp, ").append(arSize);
+            output.append("\n\tlw                  fp, 0(sp)");
+            output.append("\n\tjr                  ra");
         }
         return null;
     }
@@ -196,7 +196,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     @Override
     public String visitTyped_idfr(SExpressionsParser.Typed_idfrContext ctx) {
         String offset = String.valueOf(4 * local_vars.get(ctx.identifier().Idfr().getText()));
-        output.append("\nlw                  a0, ").append(offset).append("(fp)");
+        output.append("\n\tlw                  a0, ").append(offset).append("(fp)");
         return null;
     }
 
@@ -219,10 +219,10 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         String thenBlock = newLabel();
         String elseBlock = newLabel();
         String exit = newLabel();
-        output.append("\nbne                 t2, x0, ").append(thenBlock);
+        output.append("\n\tbne                 t2, x0, ").append(thenBlock);
         output.append("\n").append(elseBlock).append(":");
         visit(ctx.block(1));
-        output.append("\nb                   ").append(exit);
+        output.append("\n\tb                   ").append(exit);
         output.append("\n").append(thenBlock).append(":");
         visit(ctx.block(0));
         output.append("\n").append(exit).append(":");
@@ -232,22 +232,22 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     @Override
     public String visitBinExpr(SExpressionsParser.BinExprContext ctx) {
         visit(ctx.expr(0));
-        output.append("\nsw                  a0, 0(sp)");
-        output.append("\naddi         sp, sp, -4");
+        output.append("\n\tsw                  a0, 0(sp)");
+        output.append("\n\taddi        sp, sp, -4");
         visit(ctx.expr(1));
         switch (((TerminalNode) (ctx.binop().getChild(0))).getSymbol().getType()) {
-            case SExpressionsParser.Eq -> output.append("\nCompEq()");
-            case SExpressionsParser.Less -> output.append("\nCompLt()");
-            case SExpressionsParser.Gtr -> output.append("\nCompGt()");
-            case SExpressionsParser.LessEq -> output.append("\nCompLe()");
-            case SExpressionsParser.GtrEq -> output.append("\nCompGe()");
-            case SExpressionsParser.Plus -> output.append("\nPlus()");
-            case SExpressionsParser.Minus -> output.append("\nMinus()");
-            case SExpressionsParser.Times -> output.append("\nTimes()");
-            case SExpressionsParser.Div -> output.append("\nDivide()");
-            case SExpressionsParser.And -> output.append("\nBoolAnd()");
-            case SExpressionsParser.Or -> output.append("\nBoolOr()");
-            case SExpressionsParser.Xor -> output.append("\nBoolXor()");
+            case SExpressionsParser.Eq -> output.append("\n\tCompEq()");
+            case SExpressionsParser.Less -> output.append("\n\tCompLt()");
+            case SExpressionsParser.Gtr -> output.append("\n\tCompGt()");
+            case SExpressionsParser.LessEq -> output.append("\n\tCompLe()");
+            case SExpressionsParser.GtrEq -> output.append("\n\tCompGe()");
+            case SExpressionsParser.Plus -> output.append("\n\tPlus()");
+            case SExpressionsParser.Minus -> output.append("\n\tMinus()");
+            case SExpressionsParser.Times -> output.append("\n\tTimes()");
+            case SExpressionsParser.Div -> output.append("\n\tDivide()");
+            case SExpressionsParser.And -> output.append("\n\tBoolAnd()");
+            case SExpressionsParser.Or -> output.append("\n\tBoolOr()");
+            case SExpressionsParser.Xor -> output.append("\n\tBoolXor()");
         }
         return null;
     }
@@ -258,9 +258,9 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         String exit = newLabel();
         output.append("\n").append(loop).append(":");
         visit(ctx.expr());
-        output.append("\nbeq                  t2, x0, ").append(exit);
+        output.append("\n\tbeq                 t2, x0, ").append(exit);
         visit(ctx.block());
-        output.append("\nb                  ").append(loop);
+        output.append("\n\tb                   ").append(loop);
         output.append("\n").append(exit).append(":");
         return null;
     }
@@ -272,8 +272,8 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         output.append("\n").append(loop).append(":");
         visit(ctx.block());
         visit(ctx.expr());
-        output.append("\nbne                  t2, x0, ").append(exit);
-        output.append("\nb                  ").append(loop);
+        output.append("\n\tbne                 t2, x0, ").append(exit);
+        output.append("\n\tb                   ").append(loop);
         output.append("\n").append(exit).append(":");
         return null;
     }
@@ -282,20 +282,20 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     public String visitAsgmtExpr(SExpressionsParser.AsgmtExprContext ctx) {
         String offset = String.valueOf(4 * local_vars.get(ctx.identifier().Idfr().getText()));
         visit(ctx.expr());
-        output.append("\nsw                  a0, ").append(offset).append("(fp)");
+        output.append("\n\tsw                  a0, ").append(offset).append("(fp)");
         return null;
     }
 
     @Override
     public String visitFunInvocExpr(SExpressionsParser.FunInvocExprContext ctx) {
-        output.append("\nsw                  fp, 0(sp)");
-        output.append("\naddi        sp, sp, -4");
+        output.append("\n\tsw                  fp, 0(sp)");
+        output.append("\n\taddi        sp, sp, -4");
         for (int i = ctx.block().expr().size() - 1; i >= 0; i--) {
             visit(ctx.block().expr(i));
-            output.append("\nsw                  a0, 0(sp)");
-            output.append("\naddi        sp, sp, -4");
+            output.append("\n\tsw                  a0, 0(sp)");
+            output.append("\n\taddi        sp, sp, -4");
         }
-        output.append("\njal                 ").append(ctx.identifier().Idfr().getText()).append("Enter");
+        output.append("\n\tjal                 ").append(ctx.identifier().Idfr().getText()).append("Enter");
         return null;
     }
 
@@ -308,13 +308,13 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     @Override
     public String visitIdExpr(SExpressionsParser.IdExprContext ctx) {
         String offset = String.valueOf(4 * local_vars.get(ctx.identifier().Idfr().getText()));
-        output.append("\nlw                  a0,").append(offset).append("(fp)\n");
+        output.append("\n\tlw                  a0,").append(offset).append("(fp)");
         return null;
     }
 
     @Override
     public String visitIntExpr(SExpressionsParser.IntExprContext ctx) {
-        output.append("\nli                  a0, ").append(ctx.integer().IntLit().getText());
+        output.append("\n\tli                  a0, ").append(ctx.integer().IntLit().getText());
         return null;
     }
 
