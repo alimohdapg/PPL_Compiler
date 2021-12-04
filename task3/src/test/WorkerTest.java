@@ -555,4 +555,92 @@ public class WorkerTest {
                 ]
                 """));
     }
+
+    @Test
+    public void test12() throws IOException {
+        assertEquals("NORMAL_TERMINATION\n" +
+                     "5", helper("""
+                [
+                  [FunDecl,
+                    Idfr("main"),
+                    IntType,
+                    [],
+                    [
+                      [FunInvoc,
+                        Idfr("doLoop"),
+                        [IntLit(10)]
+                      ]
+                    ]
+                  ],
+                  [FunDecl,
+                    Idfr("doLoop"),
+                    IntType,
+                    [
+                      [Idfr("n"), IntType]
+                    ],
+                    [
+                      [WhileLoop,
+                        [BinOpExpr,
+                          Gtr,
+                          Idfr("n"),
+                          IntLit(5)],
+                        [
+                          [Asgmt,
+                            Idfr("n"),
+                            [BinOpExpr,
+                              Minus,
+                              Idfr("n"),
+                              IntLit(1)]
+                          ]
+                        ]
+                      ],
+                      Idfr("n")]
+                  ]
+                ]
+                """));
+    }
+
+    @Test
+    public void test13() throws IOException {
+        assertEquals("NORMAL_TERMINATION\n" +
+                     "160", helper("""
+                [
+                  [FunDecl,
+                    Idfr("main"),
+                    IntType,
+                    [],
+                    [
+                      [FunInvoc,
+                        Idfr("doLoop"),
+                        [IntLit(10)]
+                      ]
+                    ]
+                  ],
+                  [FunDecl,
+                    Idfr("doLoop"),
+                    IntType,
+                    [
+                      [Idfr("n"), IntType]
+                    ],
+                    [
+                      [RepeatLoop,
+                        [BinOpExpr,
+                          Gtr,
+                          Idfr("n"),
+                          IntLit(100)],
+                        [
+                          [Asgmt,
+                            Idfr("n"),
+                            [BinOpExpr,
+                              Times,
+                              Idfr("n"),
+                              IntLit(2)]
+                          ]
+                        ]
+                      ],
+                      Idfr("n")]
+                  ]
+                ]
+                """));
+    }
 }

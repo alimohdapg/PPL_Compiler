@@ -254,12 +254,28 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitWhileExpr(SExpressionsParser.WhileExprContext ctx) {
-        return super.visitWhileExpr(ctx);
+        String loop = newLabel();
+        String exit = newLabel();
+        output.append("\n").append(loop).append(":");
+        visit(ctx.expr());
+        output.append("\nbeq                  t2, x0, ").append(exit);
+        visit(ctx.block());
+        output.append("\nb                  ").append(loop);
+        output.append("\n").append(exit).append(":");
+        return null;
     }
 
     @Override
     public String visitRepeatExpr(SExpressionsParser.RepeatExprContext ctx) {
-        return super.visitRepeatExpr(ctx);
+        String loop = newLabel();
+        String exit = newLabel();
+        output.append("\n").append(loop).append(":");
+        visit(ctx.block());
+        visit(ctx.expr());
+        output.append("\nbne                  t2, x0, ").append(exit);
+        output.append("\nb                  ").append(loop);
+        output.append("\n").append(exit).append(":");
+        return null;
     }
 
     @Override

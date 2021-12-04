@@ -4,12 +4,8 @@ import org.antlr.v4.runtime.*;
 
 public class task3 {
 
-    /**
-     * Takes an s-expression from System.in as input and prints
-     * out risc-v assembly code.
-     *
-     * @return Risc-V assembly code.
-     */
+    // Takes an s-expression from System.in as input and prints out risc-v assembly code.
+
     public static void main(String[] args) throws Exception {
         // create a CharStream that reads from standard input
         CharStream input = CharStreams.fromStream(System.in);
