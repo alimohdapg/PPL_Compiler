@@ -5,7 +5,6 @@ import language.TypeException;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -19,10 +18,10 @@ public class SExpressionsAnalyserTest {
         SExpressionsLexer lexer = new SExpressionsLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         SExpressionsParser parser = new SExpressionsParser(tokens);
-        ParseTree tree = parser.prog();
+        SExpressionsParser.ProgContext tree = parser.prog();
         SExpressionsAnalyser typeChecker = new SExpressionsAnalyser();
         try {
-            return typeChecker.visitAndPrint((SExpressionsParser.ProgContext) tree);
+            return typeChecker.visitAndPrint(tree);
         } catch (TypeException ex) {
             return ex.report();
         }

@@ -157,8 +157,6 @@ public class Worker extends SExpressionsBaseVisitor<String> {
                        """ + output;
     }
 
-
-
     @Override
     public String visitProg(SExpressionsParser.ProgContext ctx) {
         output.append("\n\n.text\n");
