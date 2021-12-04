@@ -12,7 +12,7 @@ wholeprog
 prog
 	: dec                               # DecOnly
 	| dec prog                          # DecProg
-	; // add 'EOF' and regenerate carefully
+	;
 
 dec
 	: type Idfr '('vardec')' block

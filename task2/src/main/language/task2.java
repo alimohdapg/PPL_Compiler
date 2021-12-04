@@ -4,7 +4,9 @@ import org.antlr.v4.runtime.*;
 
 public class task2 {
 
-    //
+    // takes an s-expression from System.in as input and prints out the s-expression with the main function as the
+    // first function if no errors were found, if the s-expression is semantically invalid an exception is thrown
+    // and is subsequently printed out
     public static void main(String[] args) throws Exception {
         // create a CharStream that reads from standard input
         CharStream input = CharStreams.fromStream(System.in);
@@ -18,8 +20,10 @@ public class task2 {
         SExpressionsParser.ProgContext tree = parser.prog();
         SExpressionsAnalyser typeChecker = new SExpressionsAnalyser();
         try {
+            // semantically valid
             System.out.println(typeChecker.visitAndPrint(tree));
         } catch (TypeException ex) {
+            // semantically invalid
             System.out.println(ex.report());
         }
     }

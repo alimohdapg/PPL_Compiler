@@ -1,26 +1,27 @@
 package language;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
-
 import java.util.*;
 
 public class Worker extends SExpressionsBaseVisitor<String> {
 
-    //  local_vars stores the variable's name with its position in the function's parameter list,
-    // starting from 1 to n
+    //  local_vars stores the variable's name with its position in the function's parameter list, starting from 1 to n
     private Map<String, Integer> local_vars = new HashMap<>();
     int labelNum = 0;
     StringBuilder output = new StringBuilder();
 
+    // constructs a worker instance and starts the ParseTree's traversal with visit(prog)
     public Worker(SExpressionsParser.ProgContext prog) {
         visitProg(prog);
     }
 
+    // generates a new label each time it gets called
     public String newLabel() {
         labelNum++;
         return "label" + labelNum;
     }
 
+    // returns a string with the predefined macros and the program's risc-v assembly code
     public String getOutput() {
         return """
                        .macro CompEq()
@@ -159,7 +160,10 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitProg(SExpressionsParser.ProgContext ctx) {
+        // adds the .text directive to signal that the following instructions will be stored in a Text segment at the
+        // next available address
         output.append("\n\n.text\n");
+        // visits each function declaration
         for (int i = 0; i < ctx.decs.size(); i++) {
             visitDec(ctx.dec(i));
         }
@@ -169,8 +173,12 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     @Override
     public String visitDec(SExpressionsParser.DecContext ctx) {
         int numOfParams = ctx.params.size();
+        // size of activation record calculated through 4 * (num of parameters + 2)
+        // the extra 2 is added to account for the frame pointer and return address
         int arSize = (2 + numOfParams) * 4;
+        // refreshes the local_vars hashmap for each function
         local_vars = new HashMap<>();
+        // stores the place of each parameter in the function's parameter list into the local_vars hashmap
         for (int i = 1; i < numOfParams + 1; i++) {
             local_vars.put(ctx.params.get(i - 1).identifier().Idfr().getText(), i);
         }
@@ -180,10 +188,13 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         output.append("\n\tsw                  ra, 0(sp)");
         output.append("\n\taddi        sp, sp, -4");
         visit(ctx.block());
+        // when the execution of the main function is done, the program is exited
+        // otherwise, the function returns to where it was called from through the ra (return address) register
         if(id.equals("main")){
             output.append("\n\tFinalExit()");
         } else {
             output.append("\n\tlw                  ra, ").append("4").append("(sp)");
+            // restores the stack pointer's location by using the activation record's size
             output.append("\n\taddi        sp, sp, ").append(arSize);
             output.append("\n\tlw                  fp, 0(sp)");
             output.append("\n\tjr                  ra");
@@ -193,6 +204,8 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitTyped_idfr(SExpressionsParser.Typed_idfrContext ctx) {
+        // the parameter's location in an activation record is calculated by getting its offset from the frame
+        // pointer, the offset is calculated through (4 * the stored position of the parameter in local_vars)
         String offset = String.valueOf(4 * local_vars.get(ctx.identifier().Idfr().getText()));
         output.append("\n\tlw                  a0, ").append(offset).append("(fp)");
         return null;
@@ -205,6 +218,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitBlock(SExpressionsParser.BlockContext ctx) {
+        // visits each expression in the block
         for (int i = 0; i < ctx.expr().size(); i++) {
             visit(ctx.expr(i));
         }
@@ -217,9 +231,12 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         String thenBlock = newLabel();
         String elseBlock = newLabel();
         String exit = newLabel();
+        // if the evaluated expression doesn't return 0 (representing false), branch to the then block
+        // otherwise, the else block is evaluated
         output.append("\n\tbne                 t2, x0, ").append(thenBlock);
         output.append("\n").append(elseBlock).append(":");
         visit(ctx.block(1));
+        // skip the else block and exit the if else statement/expression
         output.append("\n\tb                   ").append(exit);
         output.append("\n").append(thenBlock).append(":");
         visit(ctx.block(0));
@@ -230,9 +247,11 @@ public class Worker extends SExpressionsBaseVisitor<String> {
     @Override
     public String visitBinExpr(SExpressionsParser.BinExprContext ctx) {
         visit(ctx.expr(0));
+        // store the lhs of the expression in the effective memory addresses at sp (the stack pointer)
         output.append("\n\tsw                  a0, 0(sp)");
         output.append("\n\taddi        sp, sp, -4");
         visit(ctx.expr(1));
+        // chose the appropriate macro to use depending on the expression's operator
         switch (((TerminalNode) (ctx.binop().getChild(0))).getSymbol().getType()) {
             case SExpressionsParser.Eq -> output.append("\n\tCompEq()");
             case SExpressionsParser.Less -> output.append("\n\tCompLt()");
@@ -256,6 +275,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         String exit = newLabel();
         output.append("\n").append(loop).append(":");
         visit(ctx.expr());
+        // exit the while loop if the expression evaluates to 0 (false), done before the body's execution
         output.append("\n\tbeq                 t2, x0, ").append(exit);
         visit(ctx.block());
         output.append("\n\tb                   ").append(loop);
@@ -270,6 +290,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
         output.append("\n").append(loop).append(":");
         visit(ctx.block());
         visit(ctx.expr());
+        // exit the repeat loop if the expression evaluates to 1 (true), done after the body's execution
         output.append("\n\tbne                 t2, x0, ").append(exit);
         output.append("\n\tb                   ").append(loop);
         output.append("\n").append(exit).append(":");
@@ -278,6 +299,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitAsgmtExpr(SExpressionsParser.AsgmtExprContext ctx) {
+        // assign the expression's value to the parameter stored at the specified offset
         String offset = String.valueOf(4 * local_vars.get(ctx.identifier().Idfr().getText()));
         visit(ctx.expr());
         output.append("\n\tsw                  a0, ").append(offset).append("(fp)");
@@ -286,13 +308,16 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitFunInvocExpr(SExpressionsParser.FunInvocExprContext ctx) {
+        // start the activation record with the frame pointer
         output.append("\n\tsw                  fp, 0(sp)");
         output.append("\n\taddi        sp, sp, -4");
+        // add parameters to the activation record in reverse order to make access and assignment easier
         for (int i = ctx.block().expr().size() - 1; i >= 0; i--) {
             visit(ctx.block().expr(i));
             output.append("\n\tsw                  a0, 0(sp)");
             output.append("\n\taddi        sp, sp, -4");
         }
+        // jump to the function's label and store the appropriate return address in ra
         output.append("\n\tjal                 ").append(ctx.identifier().Idfr().getText()).append("Enter");
         return null;
     }
@@ -305,6 +330,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitIdExpr(SExpressionsParser.IdExprContext ctx) {
+        // retrieve the parameters value by accessing it through its offset from the frame pointer
         String offset = String.valueOf(4 * local_vars.get(ctx.identifier().Idfr().getText()));
         output.append("\n\tlw                  a0,").append(offset).append("(fp)");
         return null;
@@ -312,6 +338,7 @@ public class Worker extends SExpressionsBaseVisitor<String> {
 
     @Override
     public String visitIntExpr(SExpressionsParser.IntExprContext ctx) {
+        // load the given integer into a0
         output.append("\n\tli                  a0, ").append(ctx.integer().IntLit().getText());
         return null;
     }

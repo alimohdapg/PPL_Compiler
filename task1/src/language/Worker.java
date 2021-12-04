@@ -4,8 +4,10 @@ import java.util.ArrayList;
 
 public class Worker extends LanguageBaseVisitor<Object> {
 
+    // the main and outermost arraylist
     private static final ArrayList<Object> parsedString = new ArrayList<>();
 
+    // returns the string version of the parsedString arraylist
     public String getValue() {
         return parsedString.toString();
     }
@@ -31,12 +33,14 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitDec(LanguageParser.DecContext ctx) {
+        // decList represents the second layer of arraylists following parsedString
         ArrayList<Object> decList = new ArrayList<>();
         decList.add("FunDecl");
         decList.add("Idfr(\"" + ctx.Idfr().getText() + "\")");
         decList.add(visit(ctx.type()));
         decList.add(visit(ctx.vardec()));
         decList.add(visitBlock(ctx.block()));
+        // add decList to the parsedString arraylist
         parsedString.add(decList);
         return null;
     }
@@ -48,6 +52,7 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitYesParam(LanguageParser.YesParamContext ctx) {
+        // yesParamList is the outer arraylist for the inner pair arraylists
         ArrayList<Object> yesParamList = new ArrayList<>();
         yesParamList.add(visit(ctx.vardecne()));
         return yesParamList;
@@ -55,6 +60,7 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitParam(LanguageParser.ParamContext ctx) {
+        // paramList is a pair-like arraylist with the parameter's name and its type
         ArrayList<Object> paramList = new ArrayList<>();
         paramList.add("Idfr(\"" + ctx.Idfr().getText() + "\")");
         paramList.add(visit(ctx.type()));
@@ -63,14 +69,17 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitAnotherParam(LanguageParser.AnotherParamContext ctx) {
+        // anotherParamList is a pair-like arraylist with the parameter's name and its type
         ArrayList<Object> anotherParamList = new ArrayList<>();
         anotherParamList.add("Idfr(\"" + ctx.Idfr().getText() + "\")");
         anotherParamList.add(visit(ctx.type()));
+        // go through the other parameters recursively and join their arraylists with a comma
         return visit(ctx.vardecne()) + "," + anotherParamList;
     }
 
     @Override
     public Object visitBlock(LanguageParser.BlockContext ctx) {
+        // blockList is an arraylist containing the expressions in the given block
         ArrayList<Object> blockList =  new ArrayList<>();
         blockList.add(visit(ctx.ene()));
         return blockList;
@@ -98,6 +107,7 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitAssign(LanguageParser.AssignContext ctx) {
+        // assignList is an arraylist for assignment expressions
         ArrayList<Object> assignList = new ArrayList<>();
         assignList.add("Asgmt");
         assignList.add("Idfr(\"" + ctx.Idfr().getText() + "\")");
@@ -107,6 +117,7 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitAddMinTimDiv(LanguageParser.AddMinTimDivContext ctx) {
+        // addMinTimDivList is an arraylist for binary operator expressions
         ArrayList<Object> addMinTimDivList = new ArrayList<>();
         addMinTimDivList.add("BinOpExpr");
         addMinTimDivList.add(visit(ctx.binop()));
@@ -117,6 +128,7 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitFuncCall(LanguageParser.FuncCallContext ctx) {
+        // funcCallList is an arraylist for function invocations
         ArrayList<Object> funcCallList = new ArrayList<>();
         funcCallList.add("FunInvoc");
         funcCallList.add("Idfr(\"" + ctx.Idfr().getText() + "\")");
@@ -133,6 +145,8 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitIfElse(LanguageParser.IfElseContext ctx) {
+        // ifElseList is an arraylist for if statements, with the "IfStmt" identifier, an expression,
+        // the then body, and the else body
         ArrayList<Object> ifElseList = new ArrayList<>();
         ifElseList.add("IfStmt");
         ifElseList.add(visit(ctx.exp()));
@@ -147,6 +161,8 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitWhileLoop(LanguageParser.WhileLoopContext ctx) {
+        // whileLoopList is an arraylist for while-loops, with the "WhileLoop" identifier, an expression,
+        // and the while-loop's body
         ArrayList<Object> whileLoopList = new ArrayList<>();
         whileLoopList.add("WhileLoop");
         whileLoopList.add(visit(ctx.exp()));
@@ -156,6 +172,8 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitRepeatLoop(LanguageParser.RepeatLoopContext ctx) {
+        // repeatLoopList is an arraylist for repeat-loops, with the "RepeatLoop" identifier, an expression,
+        // and the repeat-loop's body
         ArrayList<Object> repeatLoopList = new ArrayList<>();
         repeatLoopList.add("RepeatLoop");
         repeatLoopList.add(visit(ctx.exp()));
@@ -190,6 +208,7 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitBinop(LanguageParser.BinopContext ctx) {
+        // returns a word version of the operator
         return switch (ctx.getText()) {
             case "==" -> "Eq";
             case "<" -> "Less";
@@ -209,6 +228,7 @@ public class Worker extends LanguageBaseVisitor<Object> {
 
     @Override
     public Object visitType(LanguageParser.TypeContext ctx) {
+        // returns different labels for the types in the program
         return switch (ctx.getText()) {
             case "int" -> "IntType";
             case "bool" -> "BoolType";

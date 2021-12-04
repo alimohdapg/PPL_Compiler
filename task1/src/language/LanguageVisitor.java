@@ -1,6 +1,6 @@
 // Generated from C:/Users/alimo/IdeaProjects/230936_C&CA_Coursework/task1/src\Language.g4 by ANTLR 4.9.2
 
-    package language;
+package language;
 
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
