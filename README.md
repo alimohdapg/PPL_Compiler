@@ -1,20 +1,6 @@
 # PPL_Compiler
 A compiler for a custom procedural programming language that targets RISC-V assembly code.
 
-## Contents
-[File Structure & Running The Compiler](https://github.com/alimohdapg/PPL_Compiler/new/master?readme=1#file-structure--running-the-compiler)
-
-[Language & Execution Model](https://github.com/alimohdapg/PPL_Compiler/new/master?readme=1#language--execution-model)
-
-[Language Syntax](https://github.com/alimohdapg/PPL_Compiler/new/master?readme=1#language-syntax)
-
-[Simple Example Programs](https://github.com/alimohdapg/PPL_Compiler/new/master?readme=1#simple-example-programs)
-- [Macros added to the generated RISC-V assembley code](https://github.com/alimohdapg/PPL_Compiler/new/master?readme=1#macros-added-to-the-generated-risc-v-assembley-code)
-- [Example Program #1](https://github.com/alimohdapg/PPL_Compiler/new/master?readme=1#1)
-- [Example Program #2](https://github.com/alimohdapg/PPL_Compiler/new/master?readme=1#2)
-- [Example Program #3](https://github.com/alimohdapg/PPL_Compiler/new/master?readme=1#3)
-- [Example Program #4](https://github.com/alimohdapg/PPL_Compiler/new/master?readme=1#4)
-
 ## File Structure & Running The Compiler
 The compiler is split into 3 separate parts/tasks, task1 is responsible for turning a syntactically valid program into an s-expression. task2 is then used to check if the generated s-expression is semantically valid, and if so either returns the same s-expression or a new one with the main function as the first function declaration. task3 then turns the s-expression returned by task2 into a RISC-V assembly language program.
 
@@ -196,7 +182,7 @@ The main program is described by a function with name and signature int main(), 
  ecall
 .end_macro
 ```
-### 1. 
+### Example Program #1 
 ```
 int fun(int x, int y, int z) {
     if (x == y) then { z } else { 0 } }
@@ -287,7 +273,7 @@ Execution Result:
 NORMAL_TERMINATION
 0
 ```
-### 2. 
+### Example Program #2 
 ```
 int main() { fibo(10) }
 
@@ -415,7 +401,7 @@ NORMAL_TERMINATION
 55
 ```
 
-### 3. 
+### Example Program #3
 ```
 unit doLoop (int i, int a) {
     while (i <= 100) do {
@@ -530,7 +516,7 @@ NORMAL_TERMINATION
 1337
 ```
 
-### 4. 
+### Example Program #4 
 ```
 int main() { fact(10) }
 
