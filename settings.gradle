@@ -1,4 +1,4 @@
-rootProject.name = '230936_C&CA_Coursework'
+rootProject.name = 'PPL_Compiler'
 include 'task1'
 include 'task2'
 include 'task3'
